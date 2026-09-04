@@ -63,7 +63,7 @@ export function InquiryForm() {
   }
 
   return (
-    <Section id="enquire" ruled>
+    <Section id="inquire" ruled>
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <SectionHeading eyebrow={enquiry.eyebrow}>{enquiry.heading}</SectionHeading>

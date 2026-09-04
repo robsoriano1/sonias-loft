@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Facebook } from "lucide-react";
 import { footer, site } from "@/lib/content";
 
 export function Footer() {
@@ -29,6 +29,17 @@ export function Footer() {
               <Phone className="h-3.5 w-3.5" strokeWidth={1.5} />
               {site.contact.phone}
             </a>
+            {site.contact.facebook && (
+              <a
+                href={site.contact.facebook}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 text-[0.875rem] text-ink-500 transition-colors duration-300 ease-calm hover:text-ink-900"
+              >
+                <Facebook className="h-3.5 w-3.5" strokeWidth={1.5} />
+                Facebook
+              </a>
+            )}
           </div>
         </div>
 

@@ -44,7 +44,7 @@ export function Header() {
               {item.label}
             </a>
           ))}
-          <a href="#enquire" className={buttonClass("tertiary", "px-6 py-3")}>
+          <a href="#inquire" className={buttonClass("tertiary", "px-6 py-3")}>
             Check dates
           </a>
         </nav>
@@ -76,7 +76,7 @@ export function Header() {
               </a>
             ))}
             <a
-              href="#enquire"
+              href="#inquire"
               onClick={() => setOpen(false)}
               className={buttonClass("primary", "mt-4 w-full")}
             >

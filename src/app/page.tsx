@@ -6,6 +6,7 @@ import { TheLoft } from "@/components/site/TheLoft";
 import { Gallery } from "@/components/site/Gallery";
 import { Pool } from "@/components/site/Pool";
 import { Amenities } from "@/components/site/Amenities";
+import { Reviews } from "@/components/site/Reviews";
 import { Availability } from "@/components/site/Availability";
 import { InquiryForm } from "@/components/site/InquiryForm";
 import { Footer } from "@/components/site/Footer";
@@ -36,6 +37,7 @@ export default async function HomePage() {
         <Gallery />
         <Pool />
         <Amenities />
+        <Reviews />
         <Availability blocked={blocked} />
         <InquiryForm />
       </main>

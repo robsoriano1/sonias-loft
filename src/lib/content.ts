@@ -34,6 +34,7 @@ export const nav = [
   { label: "Gallery", href: "#gallery" },
   { label: "The pool", href: "#the-pool" },
   { label: "Amenities", href: "#amenities" },
+  { label: "Reviews", href: "#reviews" },
   { label: "Availability", href: "#availability" },
 ] as const;
 
@@ -47,7 +48,7 @@ export const hero = {
   subheading: "Three bedrooms, one very tall living room",
   body:
     "The pool is open from sunrise, and the glass doors fold all the way back. Breakfast is whatever you bring; the long teak table seats ten.",
-  primaryCta: { label: "Book your stay", href: "#enquire" },
+  primaryCta: { label: "Book your stay", href: "#inquire" },
   secondaryCta: { label: "View the loft", href: "#gallery" },
 
   // TODO: IMAGE REPLACEMENT  ->  /public/images/hero.jpg   (16:9, no filter)
@@ -148,27 +149,46 @@ export const amenities = {
 } as const;
 
 /* --------------------------------------------------------------------------
+ *  REVIEWS
+ *  TODO: REVIEW REPLACEMENT - swap in real guest reviews here. Add or
+ *  remove items freely; the grid reflows on its own.
+ * ------------------------------------------------------------------------ */
+export const reviews = {
+  eyebrow: "Reviews",
+  heading: "What guests say",
+  body: "A few words from people who have stayed.",
+  items: [
+    // TODO: REVIEW REPLACEMENT
+    { quote: "", name: "", detail: "" },
+    // TODO: REVIEW REPLACEMENT
+    { quote: "", name: "", detail: "" },
+    // TODO: REVIEW REPLACEMENT
+    { quote: "", name: "", detail: "" },
+  ],
+} as const;
+
+/* --------------------------------------------------------------------------
  *  AVAILABILITY - the public read-only calendar
  * ------------------------------------------------------------------------ */
 export const availability = {
   eyebrow: "Availability",
   heading: "Check your dates",
   body:
-    "Shaded days are already taken. Two-night minimum on weekends. Send an enquiry and Tita Sonia will come back to you the same day.",
+    "Shaded days are already taken. Two-night minimum on weekends. Send an inquiry and we will come back to you the same day.",
 } as const;
 
 /* --------------------------------------------------------------------------
  *  ENQUIRY FORM
  * ------------------------------------------------------------------------ */
 export const enquiry = {
-  eyebrow: "Enquire",
+  eyebrow: "Inquire",
   heading: "Tell us when you are coming",
   body:
-    "No booking fees, no platform in between. This goes straight to Tita Sonia.",
+    "No booking fees, no platform in between. This goes straight to us.",
   successHeading: "Thank you - it is with us",
   successBody:
-    "We have your enquiry and will reply to your email shortly, usually the same day.",
-  submitLabel: "Send enquiry",
+    "We have your inquiry and will reply to your email shortly, usually the same day.",
+  submitLabel: "Send inquiry",
   facebookLabel: "Message on Facebook",
 } as const;
 
