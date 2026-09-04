@@ -60,7 +60,7 @@ export function Lightbox({ images, index, onClose, onIndexChange }: Props) {
       aria-modal="true"
       aria-label={current.alt}
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-shell/97 px-4 py-6 animate-fade-up"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-shell/80 px-4 py-6 backdrop-blur-xl animate-fade-up"
     >
       <button
         type="button"
