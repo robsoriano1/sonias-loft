@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Quote } from "lucide-react";
-import { reviews } from "@/lib/content";
+import { ratings, reviews } from "@/lib/content";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { Lightbox } from "@/components/ui/Lightbox";
@@ -18,10 +18,36 @@ export function Reviews() {
 
   return (
     <Section id="reviews" ruled>
-      <div className="lg:max-w-[36ch]">
-        <SectionHeading eyebrow={reviews.eyebrow}>{reviews.heading}</SectionHeading>
-        <Lede>{reviews.body}</Lede>
+      <div className="flex flex-wrap items-end justify-between gap-8">
+        <div className="lg:max-w-[36ch]">
+          <SectionHeading eyebrow={reviews.eyebrow}>{reviews.heading}</SectionHeading>
+          <Lede>{reviews.body}</Lede>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm bg-lagoon-800 font-display text-[1.375rem] font-medium text-shell">
+            {ratings.score}
+          </span>
+          <div>
+            <p className="text-[1rem] font-medium text-ink-900">{ratings.label}</p>
+            <p className="text-[0.8125rem] text-ink-500">{ratings.count} reviews</p>
+          </div>
+        </div>
       </div>
+
+      <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-stone pt-8 sm:grid-cols-4">
+        {ratings.categories.map((category) => (
+          <div key={category.label}>
+            <dt className="sr-only">{category.label}</dt>
+            <dd className="font-display text-[1.75rem] font-light leading-none text-ink-900">
+              {category.value}
+            </dd>
+            <p className="mt-3 text-[0.6875rem] uppercase tracking-[0.2em] text-ink-500">
+              {category.label}
+            </p>
+          </div>
+        ))}
+      </dl>
 
       <ul className="mt-12 grid gap-6 md:grid-cols-3">
         {reviews.items.map((item, i) => (

@@ -117,6 +117,8 @@ export const gallery = {
     { src: "/images/gallery-08.jpg", alt: "The gated entrance and carport at dusk", ratio: "3/4" },
     // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-09.jpg  (3:4)
     { src: "/images/gallery-09.jpg", alt: "The gate and driveway, banana trees over the wall", ratio: "3/4" },
+    // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-10.jpg  (3:4)
+    { src: "/images/gallery-10.jpg", alt: "The covered porch with a bench by the front door", ratio: "3/4" },
   ],
 } as const;
 
@@ -251,6 +253,21 @@ export const reviews = {
     { image: "/images/review-02.jpg", quote: "", name: "", detail: "" },
     // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-03.jpg (3:4)
     { image: "/images/review-03.jpg", quote: "", name: "", detail: "" },
+  ],
+} as const;
+
+/* --------------------------------------------------------------------------
+ *  RATINGS - the aggregate score shown above the review cards
+ * ------------------------------------------------------------------------ */
+export const ratings = {
+  score: "9.8",
+  label: "Exceptional",
+  count: 11,
+  categories: [
+    { label: "Cleanliness", value: "10.0" },
+    { label: "Facilities", value: "10.0" },
+    { label: "Service", value: "10.0" },
+    { label: "Value for money", value: "10.0" },
   ],
 } as const;
 
