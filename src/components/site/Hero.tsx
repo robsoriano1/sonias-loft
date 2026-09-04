@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { hero, site } from "@/lib/content";
 import { ImageFrame } from "@/components/ui/ImageFrame";
+import { Lightbox } from "@/components/ui/Lightbox";
 import { buttonClass } from "@/components/ui/Button";
 
 /* ============================================================================
@@ -9,6 +13,8 @@ import { buttonClass } from "@/components/ui/Button";
  *  Photo is edge-anchored and full-bleed on mobile.
  * ========================================================================== */
 export function Hero() {
+  const [open, setOpen] = useState(false);
+
   return (
     <section className="relative">
       <div className="mx-auto w-full max-w-content px-6 pb-14 pt-14 md:px-10 md:pb-24 md:pt-24">
@@ -70,8 +76,16 @@ export function Hero() {
           zoomOnHover={false}
           sizes="100vw"
           className="max-h-[70vh]"
+          onZoom={() => setOpen(true)}
         />
       </div>
+
+      <Lightbox
+        images={[{ src: hero.image, alt: hero.imageAlt }]}
+        index={open ? 0 : null}
+        onClose={() => setOpen(false)}
+        onIndexChange={() => {}}
+      />
     </section>
   );
 }

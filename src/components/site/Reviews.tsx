@@ -1,7 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { Quote } from "lucide-react";
 import { reviews } from "@/lib/content";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
+import { Lightbox } from "@/components/ui/Lightbox";
 
 /* ============================================================================
  *  REVIEWS
@@ -10,6 +14,8 @@ import { ImageFrame } from "@/components/ui/ImageFrame";
  *  any are uploaded. Quote and name only render once filled in.
  * ========================================================================== */
 export function Reviews() {
+  const [index, setIndex] = useState<number | null>(null);
+
   return (
     <Section id="reviews" ruled>
       <div className="lg:max-w-[36ch]">
@@ -18,9 +24,9 @@ export function Reviews() {
       </div>
 
       <ul className="mt-12 grid gap-6 md:grid-cols-3">
-        {reviews.items.map((item, index) => (
+        {reviews.items.map((item, i) => (
           <li
-            key={index}
+            key={i}
             className="overflow-hidden rounded-md border border-stone bg-white"
           >
             {/* TODO: IMAGE REPLACEMENT -> path comes from src/lib/content.ts (reviews.items[].image) */}
@@ -30,6 +36,7 @@ export function Reviews() {
               ratio="3/4"
               sizes="(min-width: 768px) 33vw, 100vw"
               zoomOnHover={false}
+              onZoom={() => setIndex(i)}
             />
 
             {(item.quote || item.name) && (
@@ -51,6 +58,16 @@ export function Reviews() {
           </li>
         ))}
       </ul>
+
+      <Lightbox
+        images={reviews.items.map((item) => ({
+          src: item.image,
+          alt: item.name ? `Photo from ${item.name}'s stay` : "Guest photo",
+        }))}
+        index={index}
+        onClose={() => setIndex(null)}
+        onIndexChange={setIndex}
+      />
     </Section>
   );
 }

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, ZoomIn } from "lucide-react";
 
 type Ratio = "16/9" | "3/4" | "1/1";
 
@@ -16,6 +16,8 @@ type Props = {
   /** Slow 1.03 zoom on hover, per the motion rules. */
   zoomOnHover?: boolean;
   className?: string;
+  /** When set, the frame becomes clickable and shows a zoom-in affordance on hover. */
+  onZoom?: () => void;
 };
 
 /* ============================================================================
@@ -37,16 +39,34 @@ export function ImageFrame({
   priority = false,
   zoomOnHover = true,
   className = "",
+  onZoom,
 }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [missing, setMissing] = useState(false);
 
   const filename = src.split("/").pop() ?? src;
   const ready = loaded && !missing;
+  const zoomable = Boolean(onZoom) && ready;
 
   return (
     <div
-      className={`group relative isolate overflow-hidden bg-sand ${className}`}
+      role={zoomable ? "button" : undefined}
+      tabIndex={zoomable ? 0 : undefined}
+      aria-label={zoomable ? `View larger: ${alt}` : undefined}
+      onClick={zoomable ? onZoom : undefined}
+      onKeyDown={
+        zoomable
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onZoom?.();
+              }
+            }
+          : undefined
+      }
+      className={`group relative isolate block w-full overflow-hidden bg-sand ${
+        zoomable ? "cursor-zoom-in" : ""
+      } ${className}`}
       style={{ aspectRatio: ratio }}
     >
       {/* Skeleton - visible until the real photo has decoded */}
@@ -86,6 +106,19 @@ export function ImageFrame({
             ready ? "opacity-100" : "opacity-0"
           } ${zoomOnHover ? "group-hover:scale-[1.03]" : ""}`}
         />
+      )}
+
+      {/* Zoom affordance - a soft scrim and icon that only appear on hover */}
+      {zoomable && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 flex items-center justify-center bg-ink-900/0 transition-colors duration-300 ease-calm group-hover:bg-ink-900/20"
+        >
+          <ZoomIn
+            className="h-6 w-6 text-shell opacity-0 transition-opacity duration-300 ease-calm group-hover:opacity-100"
+            strokeWidth={1.5}
+          />
+        </div>
       )}
     </div>
   );

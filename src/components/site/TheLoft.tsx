@@ -1,8 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { theLoft } from "@/lib/content";
 import { ImageFrame } from "@/components/ui/ImageFrame";
+import { Lightbox } from "@/components/ui/Lightbox";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 
 export function TheLoft() {
+  const [open, setOpen] = useState(false);
+
   return (
     <Section id="the-loft">
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
@@ -35,9 +41,17 @@ export function TheLoft() {
             alt={theLoft.imageAlt}
             ratio="16/9"
             sizes="(min-width: 1024px) 50vw, 100vw"
+            onZoom={() => setOpen(true)}
           />
         </div>
       </div>
+
+      <Lightbox
+        images={[{ src: theLoft.image, alt: theLoft.imageAlt }]}
+        index={open ? 0 : null}
+        onClose={() => setOpen(false)}
+        onIndexChange={() => {}}
+      />
     </Section>
   );
 }

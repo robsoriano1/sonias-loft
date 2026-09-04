@@ -23,6 +23,9 @@ export const site = {
     phone: "+63 900 000 0000",
     // Leave as an empty string to hide the Facebook link everywhere.
     facebook: "https://m.me/soniasloft",
+    // The Facebook page's photo album - linked from the Gallery section.
+    // Leave as an empty string to hide that link.
+    facebookPhotos: "https://www.facebook.com/SoniasLoftGuestHouse/photos",
   },
 
   // TODO: IMAGE REPLACEMENT -> /public/images/logo.png  (square mark, transparent background)
