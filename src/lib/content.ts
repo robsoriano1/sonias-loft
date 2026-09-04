@@ -111,6 +111,12 @@ export const gallery = {
     { src: "/images/gallery-05.jpg", alt: "The shaded deck in the afternoon", ratio: "3/4" },
     // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-06.jpg  (16:9)
     { src: "/images/gallery-06.jpg", alt: "The garden and the trees beyond the wall", ratio: "16/9" },
+    // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-07.jpg  (3:4)
+    { src: "/images/gallery-07.jpg", alt: "A bedroom with a low platform bed and sheer curtains", ratio: "3/4" },
+    // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-08.jpg  (3:4)
+    { src: "/images/gallery-08.jpg", alt: "The gated entrance and carport at dusk", ratio: "3/4" },
+    // TODO: IMAGE REPLACEMENT  ->  /public/images/gallery-09.jpg  (3:4)
+    { src: "/images/gallery-09.jpg", alt: "The gate and driveway, banana trees over the wall", ratio: "3/4" },
   ],
 } as const;
 
