@@ -14,7 +14,7 @@ import {
   Check,
   type LucideIcon,
 } from "lucide-react";
-import { amenities } from "@/lib/content";
+import { amenities, facilities } from "@/lib/content";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 
 /* Map the plain-English icon names used in content.ts to Lucide icons.
@@ -66,6 +66,26 @@ export function Amenities() {
             );
           })}
         </ul>
+      </div>
+
+      <div className="mt-16 border-t border-stone pt-14 lg:mt-20 lg:pt-16">
+        <p className="eyebrow">{facilities.heading}</p>
+        <div className="mt-8 columns-1 gap-x-10 sm:columns-2 lg:columns-3">
+          {facilities.groups.map((group) => (
+            <div key={group.category} className="mb-9 break-inside-avoid">
+              <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-ink-900">
+                {group.category}
+              </p>
+              <ul className="mt-4 space-y-2.5">
+                {group.items.map((item) => (
+                  <li key={item} className="text-[0.875rem] leading-[1.6] text-ink-500">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
     </Section>
   );

@@ -52,7 +52,7 @@ export function Hero() {
                   rel="noreferrer"
                   className={buttonClass("link", "ml-1")}
                 >
-                  Message on Facebook
+                  View on Facebook
                 </a>
               )}
             </div>
@@ -75,7 +75,11 @@ export function Hero() {
           priority
           zoomOnHover={false}
           sizes="100vw"
-          className="max-h-[70vh]"
+          // Capped tighter than the design's 70vh: the source photo is only
+          // 1154px wide (a compressed phone export), so on retina/4K screens
+          // a taller band forces more upscaling and looks soft. Shrinking the
+          // rendered width keeps the crop closer to native resolution.
+          className="max-h-[58vh] xl:max-h-[560px]"
           onZoom={() => setOpen(true)}
         />
       </div>

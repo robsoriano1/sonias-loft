@@ -22,7 +22,7 @@ export const site = {
     email: "hello@soniasloft.com",
     phone: "+63 900 000 0000",
     // Leave as an empty string to hide the Facebook link everywhere.
-    facebook: "https://m.me/soniasloft",
+    facebook: "https://www.facebook.com/SoniasLoftGuestHouse/photos",
     // The Facebook page's photo album - linked from the Gallery section.
     // Leave as an empty string to hide that link.
     facebookPhotos: "https://www.facebook.com/SoniasLoftGuestHouse/photos",
@@ -32,8 +32,9 @@ export const site = {
   // Until this file exists, the header just shows the text wordmark - nothing breaks.
   logo: "/images/logo.png",
 
-  // TODO: IMAGE REPLACEMENT -> /public/images/favicon.ico  (the browser tab icon)
-  favicon: "/images/favicon.ico",
+  // Browser tab icon. Reuses logo.png since no dedicated favicon.ico was
+  // provided - drop one in at /public/images/favicon.ico to use that instead.
+  favicon: "/images/logo.png",
 } as const;
 
 /* --------------------------------------------------------------------------
@@ -44,6 +45,7 @@ export const nav = [
   { label: "Gallery", href: "#gallery" },
   { label: "The pool", href: "#the-pool" },
   { label: "Amenities", href: "#amenities" },
+  { label: "House rules", href: "#house-rules" },
   { label: "Reviews", href: "#reviews" },
   { label: "Availability", href: "#availability" },
 ] as const;
@@ -74,12 +76,12 @@ export const theLoft = {
   eyebrow: "The loft",
   heading: "Three bedrooms, one very tall living room",
   body:
-    "The living room runs double height, so the light moves across it all day. Two bedrooms sit downstairs off the garden; the third is up under the roofline with its own view of the trees. It sleeps ten comfortably and stays cool without trying.",
+    "The living room runs double height, so the light moves across it all day. Two of the three bedrooms sleep four each on bunk beds; the third holds a queen. Four bathrooms keep mornings easy across 280 sqm (3,014 sq ft) - room enough for 16 guests comfortably, up to 25 at a squeeze.",
   stats: [
-    { value: "10", label: "Guests" },
+    { value: "16", label: "Guests" },
     { value: "3", label: "Bedrooms" },
-    { value: "2", label: "Baths" },
-    { value: "24h", label: "Access" },
+    { value: "4", label: "Baths" },
+    { value: "280m²", label: "Size" },
   ],
 
   // TODO: IMAGE REPLACEMENT  ->  /public/images/living.jpg   (16:9)
@@ -122,7 +124,7 @@ export const pool = {
     "Shallow end for the kids, underwater lights for the evening, and a shaded deck that stays cool after four.",
   stats: [
     { value: "1.2m", label: "Depth" },
-    { value: "10", label: "Guests" },
+    { value: "16", label: "Guests" },
     { value: "24h", label: "Access" },
   ],
 
@@ -155,6 +157,75 @@ export const amenities = {
     { icon: "trees",   title: "Garden and deck",     detail: "Shaded from four onwards" },
     { icon: "shower",  title: "Outdoor shower",      detail: "Beside the pool" },
     { icon: "speaker", title: "Bluetooth speaker",   detail: "Yours until ten in the evening" },
+  ],
+} as const;
+
+/* --------------------------------------------------------------------------
+ *  FULL AMENITIES LIST - the exhaustive, categorised version shown under
+ *  the curated grid above. Add or remove items/groups freely.
+ * ------------------------------------------------------------------------ */
+export const facilities = {
+  heading: "The full list",
+  groups: [
+    {
+      category: "Kitchen",
+      items: [
+        "Dishes and dining utensils",
+        "Dishwasher",
+        "Kitchen basics (cookware, oils, condiments)",
+        "Microwave",
+        "Refrigerator",
+        "Stove",
+      ],
+    },
+    {
+      category: "Bathroom",
+      items: ["Body wash", "Toiletries", "Towels"],
+    },
+    {
+      category: "Standard",
+      items: ["Fans (ceiling or portable)"],
+    },
+    {
+      category: "Outdoor",
+      items: ["Balcony or terrace", "BBQ grill", "Garden or backyard"],
+    },
+    {
+      category: "Entertainment",
+      items: [
+        "Board games",
+        "Sound system",
+        "Video streaming services",
+        "Cable channels",
+        "Internet",
+        "TV",
+        "Wi-Fi",
+      ],
+    },
+    {
+      category: "Safety and cleanliness",
+      items: ["Cleaned by professional cleaning company", "Hand sanitizer and soap provided"],
+    },
+    {
+      category: "Comforts",
+      items: ["Air conditioning", "Private entrance"],
+    },
+    {
+      category: "Getting around",
+      items: ["Free parking"],
+    },
+    {
+      category: "Dining, drinking, and snacking",
+      items: ["Coffee or tea", "Kitchen"],
+    },
+    {
+      category: "Layout and furnishings",
+      items: ["Desk/workspace", "Pool"],
+    },
+    {
+      category: "Services and conveniences",
+      items: ["Doorman"],
+    },
   ],
 } as const;
 
@@ -199,18 +270,42 @@ export const enquiry = {
   successBody:
     "We have your inquiry and will reply to your email shortly, usually the same day.",
   submitLabel: "Send inquiry",
-  facebookLabel: "Message on Facebook",
+  facebookLabel: "View on Facebook",
 } as const;
 
 /* --------------------------------------------------------------------------
  *  HOUSE NOTES - shown under the enquiry form
  * ------------------------------------------------------------------------ */
 export const houseNotes = [
-  "Check-in from 2pm, check-out by 12nn.",
+  "Check-in 9am-7pm, check-out 7am-5pm. Reception open until 10pm.",
   "Two-night minimum on weekends.",
-  "Ten guests included. Ask us about more.",
+  "16 guests included, max 25. Ask us about more.",
   "No parties or events, please - the neighbours are close.",
 ] as const;
+
+/* --------------------------------------------------------------------------
+ *  HOUSE RULES - shown in full before the enquiry form
+ * ------------------------------------------------------------------------ */
+export const houseRules = {
+  eyebrow: "Before you book",
+  heading: "House rules",
+  body:
+    "Welcome, and thank you for staying with us. To keep the stay safe and pleasant for everyone, please observe the following.",
+  items: [
+    "No smoking inside the property.",
+    "Pets: only one small pet allowed, with diaper and pee pad. Pets are not allowed on beds or sofas. Any damages will have a fee, and deep cleaning due to pet pee/poop smell will incur ₱2,500.",
+    "No unregistered guests allowed.",
+    "No eating or drinking in bedrooms and inside the pool.",
+    "Noise curfew: 11:00 PM – 7:00 AM.",
+    "Turn off air-conditioners when not in use.",
+    "Respect check-out time.",
+    "Do not rearrange furnishings. Guests are responsible for any damages.",
+    "Use the provided bins to segregate your trash.",
+    "Board games are for resort use only - please do not take them home.",
+    "Clean As You Go (CAYGO): wash used dishes, return items to their place, and help keep the space neat for the next guest.",
+    "Pool safety: there is no lifeguard on duty. Please watch over your children at all times, especially in or near the pool - unattended kids are not allowed.",
+  ],
+} as const;
 
 /* --------------------------------------------------------------------------
  *  FOOTER
