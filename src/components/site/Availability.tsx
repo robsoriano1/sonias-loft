@@ -4,7 +4,7 @@ import { AvailabilityCalendar } from "./AvailabilityCalendar";
 
 export function Availability({ blocked }: { blocked: string[] }) {
   return (
-    <Section id="availability" ruled className="bg-white">
+    <Section id="availability" ruled className="bg-sand">
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <SectionHeading eyebrow={availability.eyebrow}>{availability.heading}</SectionHeading>

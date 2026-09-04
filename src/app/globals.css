@@ -10,26 +10,32 @@
   }
 
   body {
-    /* Jost body: 16-19px, line-height 1.65-1.75 (design doc, section 03) */
+    /* Instrument Sans body: 16-19px, line-height 1.65-1.75 */
     font-size: 1rem;
     line-height: 1.7;
+
+    /* Atmosphere: a low, warm brass glow bottom-right meeting a cool aqua
+       glow top-left, like pool light and lamplight sharing a dark room.
+       Fixed so it stays put as the page scrolls past it. */
+    background-color: #0c1614;
+    background-image:
+      radial-gradient(52% 46% at 8% -6%, rgba(94, 242, 219, 0.10), transparent 62%),
+      radial-gradient(46% 42% at 104% 8%, rgba(242, 200, 124, 0.07), transparent 60%),
+      radial-gradient(60% 50% at 50% 112%, rgba(94, 242, 219, 0.05), transparent 65%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
-  @media (min-width: 768px) {
-    body {
-      font-size: 1.1875rem; /* 19px */
-    }
-  }
-
-  /* Architectural focus ring: a square outline, never a glow. */
+  /* A warm brass ring, never a glow - keyboard focus should read as a
+     deliberate mark, not a blur. */
   :focus-visible {
-    outline: 2px solid #0e5e5c;
+    outline: 2px solid #f2c87c;
     outline-offset: 2px;
   }
 
   ::selection {
-    background-color: #e4f2f0;
-    color: #14181a;
+    background-color: rgba(94, 242, 219, 0.28);
+    color: #f4edde;
   }
 }
 
@@ -37,7 +43,7 @@
   /* The skeleton that holds an image slot open until the owner uploads a
      photo. Sand -> stone -> sand, very slow. Nothing bouncy. */
   .img-skeleton {
-    background-image: linear-gradient(100deg, #f0ede8 30%, #ddd9d2 50%, #f0ede8 70%);
+    background-image: linear-gradient(100deg, #15211e 30%, #263731 50%, #15211e 70%);
     background-size: 220% 100%;
     animation: img-skeleton-pan 2.8s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
   }

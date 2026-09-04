@@ -16,6 +16,10 @@ type Props = {
   /** Slow 1.03 zoom on hover, per the motion rules. */
   zoomOnHover?: boolean;
   className?: string;
+  /** CSS object-position, e.g. "50% 70%". Most photos here are tall phone
+      portraits forced into a wide crop; a plain center crop often lands on
+      the emptiest part of the shot, so this lets a caller re-anchor it. */
+  focalPoint?: string;
   /** When set, the frame becomes clickable and shows a zoom-in affordance on hover. */
   onZoom?: () => void;
 };
@@ -39,6 +43,7 @@ export function ImageFrame({
   priority = false,
   zoomOnHover = true,
   className = "",
+  focalPoint,
   onZoom,
 }: Props) {
   const [loaded, setLoaded] = useState(false);
@@ -102,20 +107,23 @@ export function ImageFrame({
           priority={priority}
           onLoad={() => setLoaded(true)}
           onError={() => setMissing(true)}
+          style={focalPoint ? { objectPosition: focalPoint } : undefined}
           className={`object-cover transition-[opacity,transform] duration-[400ms] ease-calm ${
             ready ? "opacity-100" : "opacity-0"
           } ${zoomOnHover ? "group-hover:scale-[1.03]" : ""}`}
         />
       )}
 
-      {/* Zoom affordance - a soft scrim and icon that only appear on hover */}
+      {/* Zoom affordance - a soft scrim and icon that only appear on hover.
+          Fixed dark scrim + light icon, independent of the ink/shell tokens,
+          so the photo always dims (never brightens) on hover regardless of theme. */}
       {zoomable && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center bg-ink-900/0 transition-colors duration-300 ease-calm group-hover:bg-ink-900/20"
+          className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 ease-calm group-hover:bg-black/35"
         >
           <ZoomIn
-            className="h-6 w-6 text-shell opacity-0 transition-opacity duration-300 ease-calm group-hover:opacity-100"
+            className="h-6 w-6 text-ink-900 opacity-0 transition-opacity duration-300 ease-calm group-hover:opacity-100"
             strokeWidth={1.5}
           />
         </div>

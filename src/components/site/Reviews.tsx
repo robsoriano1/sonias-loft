@@ -27,7 +27,7 @@ export function Reviews() {
         {reviews.items.map((item, i) => (
           <li
             key={i}
-            className="overflow-hidden rounded-md border border-stone bg-white"
+            className="overflow-hidden rounded-md border border-stone bg-sand"
           >
             {/* TODO: IMAGE REPLACEMENT -> path comes from src/lib/content.ts (reviews.items[].image) */}
             <ImageFrame

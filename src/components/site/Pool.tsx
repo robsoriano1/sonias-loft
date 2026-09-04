@@ -18,7 +18,7 @@ export function Pool() {
   return (
     <section id="the-pool" className="border-t border-stone py-14 md:py-section lg:py-section-lg">
       <div className="mx-auto w-full max-w-content px-6 md:px-10">
-        <div className="grid overflow-hidden rounded-md border border-stone bg-white transition-shadow duration-300 ease-calm hover:shadow-soft lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-md border border-stone bg-sand transition-shadow duration-300 ease-calm hover:shadow-soft lg:grid-cols-2">
           {/* TODO: IMAGE REPLACEMENT -> path comes from src/lib/content.ts (pool.image) */}
           <ImageFrame
             src={pool.image}

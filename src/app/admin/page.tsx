@@ -78,7 +78,7 @@ export default async function AdminPage() {
         </h1>
 
         {dbError && (
-          <p className="mt-8 rounded-sm border border-teak-600 bg-white px-5 py-4 text-[0.875rem] leading-[1.65] text-teak-600">
+          <p className="mt-8 rounded-sm border border-teak-600 bg-sand px-5 py-4 text-[0.875rem] leading-[1.65] text-teak-600">
             {dbError}
           </p>
         )}

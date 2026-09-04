@@ -10,7 +10,7 @@ import { Button, buttonClass } from "@/components/ui/Button";
 import { todayKey } from "@/lib/dates";
 
 const field =
-  "w-full rounded-sm border border-stone bg-white px-4 py-3 text-[1rem] text-ink-900 placeholder:text-ink-300 transition-colors duration-300 ease-calm focus:border-lagoon-800 focus:outline-none";
+  "w-full rounded-sm border border-stone bg-sand px-4 py-3 text-[1rem] text-ink-900 placeholder:text-ink-300 transition-colors duration-300 ease-calm focus:border-lagoon-800 focus:outline-none";
 
 const label = "block text-[0.6875rem] uppercase tracking-[0.2em] text-ink-500";
 
@@ -106,7 +106,7 @@ export function InquiryForm() {
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="rounded-md border border-stone bg-white p-7 md:p-10"
+              className="rounded-md border border-stone bg-sand p-7 md:p-10"
             >
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
@@ -193,7 +193,7 @@ export function InquiryForm() {
               </div>
 
               {status === "error" && (
-                <p className="mt-6 rounded-sm border border-teak-600 bg-white px-4 py-3 text-[0.875rem] text-teak-600">
+                <p className="mt-6 rounded-sm border border-teak-600 bg-sand px-4 py-3 text-[0.875rem] text-teak-600">
                   {error}
                 </p>
               )}

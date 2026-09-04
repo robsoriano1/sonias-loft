@@ -60,13 +60,13 @@ export function Lightbox({ images, index, onClose, onIndexChange }: Props) {
       aria-modal="true"
       aria-label={current.alt}
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-900/95 px-4 py-6 animate-fade-up"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-shell/97 px-4 py-6 animate-fade-up"
     >
       <button
         type="button"
         onClick={onClose}
         aria-label="Close"
-        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center text-shell/80 transition-colors duration-300 ease-calm hover:text-shell md:right-6 md:top-6"
+        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center text-ink-900/80 transition-colors duration-300 ease-calm hover:text-ink-900 md:right-6 md:top-6"
       >
         <X className="h-6 w-6" strokeWidth={1.5} />
       </button>
@@ -80,7 +80,7 @@ export function Lightbox({ images, index, onClose, onIndexChange }: Props) {
               goPrev();
             }}
             aria-label="Previous photo"
-            className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-shell/80 transition-colors duration-300 ease-calm hover:text-shell md:left-6"
+            className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-ink-900/80 transition-colors duration-300 ease-calm hover:text-ink-900 md:left-6"
           >
             <ChevronLeft className="h-7 w-7" strokeWidth={1.5} />
           </button>
@@ -91,7 +91,7 @@ export function Lightbox({ images, index, onClose, onIndexChange }: Props) {
               goNext();
             }}
             aria-label="Next photo"
-            className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-shell/80 transition-colors duration-300 ease-calm hover:text-shell md:right-6"
+            className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-ink-900/80 transition-colors duration-300 ease-calm hover:text-ink-900 md:right-6"
           >
             <ChevronRight className="h-7 w-7" strokeWidth={1.5} />
           </button>
@@ -107,7 +107,7 @@ export function Lightbox({ images, index, onClose, onIndexChange }: Props) {
       />
 
       {count > 1 && (
-        <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[0.78125rem] tracking-[0.1em] text-shell/70">
+        <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[0.78125rem] tracking-[0.1em] text-ink-900/70">
           {index + 1} / {count}
         </p>
       )}

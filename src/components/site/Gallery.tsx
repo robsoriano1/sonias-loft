@@ -12,7 +12,7 @@ export function Gallery() {
   const [index, setIndex] = useState<number | null>(null);
 
   return (
-    <Section id="gallery" ruled className="bg-white">
+    <Section id="gallery" ruled className="bg-sand">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-prose">
           <SectionHeading eyebrow={gallery.eyebrow}>{gallery.heading}</SectionHeading>

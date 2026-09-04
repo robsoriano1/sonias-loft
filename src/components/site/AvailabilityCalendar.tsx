@@ -26,7 +26,7 @@ export function AvailabilityCalendar({ blocked }: { blocked: string[] }) {
   const months = [cursor, addMonths(cursor.year, cursor.month, 1)];
 
   return (
-    <div className="rounded-md border border-stone bg-white">
+    <div className="rounded-md border border-stone bg-sand">
       {/* Month stepper */}
       <div className="flex items-center justify-between border-b border-stone px-5 py-4">
         <button
@@ -84,7 +84,7 @@ export function AvailabilityCalendar({ blocked }: { blocked: string[] }) {
                     className={[
                       "flex h-9 items-center justify-center text-[0.875rem] tabular-nums",
                       isBlocked
-                        ? "bg-sand text-ink-300 line-through"
+                        ? "bg-shell text-ink-300 line-through"
                         : isPast
                           ? "text-ink-300"
                           : "text-ink-900",
@@ -103,11 +103,11 @@ export function AvailabilityCalendar({ blocked }: { blocked: string[] }) {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-6 border-t border-stone px-5 py-4 sm:px-7">
         <span className="flex items-center gap-2.5 text-[0.78125rem] text-ink-500">
-          <span className="h-3 w-3 border border-stone bg-white" aria-hidden="true" />
+          <span className="h-3 w-3 border border-stone bg-sand" aria-hidden="true" />
           Available
         </span>
         <span className="flex items-center gap-2.5 text-[0.78125rem] text-ink-500">
-          <span className="h-3 w-3 border border-stone bg-sand" aria-hidden="true" />
+          <span className="h-3 w-3 border border-stone bg-shell" aria-hidden="true" />
           Booked
         </span>
       </div>

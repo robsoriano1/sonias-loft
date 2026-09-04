@@ -19,11 +19,11 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "rounded-sm bg-ink-900 px-7 py-4 text-shell hover:bg-lagoon-800",
+    "rounded-sm bg-ink-900 px-7 py-4 text-shell hover:bg-lagoon-800 hover:shadow-glow",
   secondary:
-    "rounded-sm border border-stone bg-white px-7 py-4 text-ink-900 hover:border-ink-900",
+    "rounded-sm border border-stone bg-sand px-7 py-4 text-ink-900 hover:border-ink-900",
   tertiary:
-    "rounded-sm bg-lagoon-50 px-7 py-4 text-lagoon-800 hover:bg-lagoon-300 hover:text-ink-900",
+    "rounded-sm bg-lagoon-50 px-7 py-4 text-lagoon-800 hover:bg-lagoon-300 hover:text-ink-900 hover:shadow-glow",
   link:
     "border-b border-brass-400 pb-0.5 text-brass-600 hover:border-brass-600",
 };

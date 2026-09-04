@@ -9,7 +9,7 @@ import { site } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 
 const field =
-  "w-full rounded-sm border border-stone bg-white px-4 py-3 text-[1rem] text-ink-900 placeholder:text-ink-300 transition-colors duration-300 ease-calm focus:border-lagoon-800 focus:outline-none";
+  "w-full rounded-sm border border-stone bg-sand px-4 py-3 text-[1rem] text-ink-900 placeholder:text-ink-300 transition-colors duration-300 ease-calm focus:border-lagoon-800 focus:outline-none";
 const label = "block text-[0.6875rem] uppercase tracking-[0.2em] text-ink-500";
 
 function LoginForm() {
@@ -46,7 +46,7 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-stone bg-white p-8 md:p-10">
+    <form onSubmit={handleSubmit} className="rounded-md border border-stone bg-sand p-8 md:p-10">
       <div className="space-y-6">
         <div>
           <label className={label} htmlFor="email">

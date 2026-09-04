@@ -33,7 +33,7 @@ export function InquiryTable({ inquiries }: { inquiries: Inquiry[] }) {
             className={`rounded-sm border px-4 py-2 text-[0.6875rem] uppercase tracking-[0.15em] transition-colors duration-300 ease-calm ${
               filter === value
                 ? "border-ink-900 bg-ink-900 text-shell"
-                : "border-stone bg-white text-ink-500 hover:border-ink-900 hover:text-ink-900"
+                : "border-stone bg-sand text-ink-500 hover:border-ink-900 hover:text-ink-900"
             }`}
           >
             {value}
@@ -47,14 +47,14 @@ export function InquiryTable({ inquiries }: { inquiries: Inquiry[] }) {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-md border border-stone bg-white px-8 py-16 text-center">
+        <div className="rounded-md border border-stone bg-sand px-8 py-16 text-center">
           <p className="font-display text-[1.5rem] font-light text-ink-900">Nothing here yet</p>
           <p className="mt-3 text-[0.9375rem] text-ink-500">
             Enquiries from the website land in this table.
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-stone bg-white">
+        <div className="overflow-x-auto rounded-md border border-stone bg-sand">
           <table className="w-full min-w-[62rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-stone">
@@ -125,7 +125,7 @@ export function InquiryTable({ inquiries }: { inquiries: Inquiry[] }) {
                           void setInquiryStatus(row.id, next);
                         });
                       }}
-                      className={`rounded-sm border bg-white px-3 py-2 text-[0.6875rem] uppercase tracking-[0.15em] focus:outline-none ${STATUS_STYLE[row.status]}`}
+                      className={`rounded-sm border bg-sand px-3 py-2 text-[0.6875rem] uppercase tracking-[0.15em] focus:outline-none ${STATUS_STYLE[row.status]}`}
                     >
                       {STATUSES.map((s) => (
                         <option key={s} value={s}>

@@ -40,7 +40,7 @@ export function CalendarManager({ blocked }: { blocked: string[] }) {
   }
 
   return (
-    <div className="rounded-md border border-stone bg-white">
+    <div className="rounded-md border border-stone bg-sand">
       <div className="flex items-center justify-between border-b border-stone px-5 py-4">
         <div className="flex items-center gap-1">
           <button
@@ -111,7 +111,7 @@ export function CalendarManager({ blocked }: { blocked: string[] }) {
                       "flex h-10 items-center justify-center rounded-sm border text-[0.875rem] tabular-nums transition-colors duration-300 ease-calm disabled:cursor-wait",
                       isBlocked
                         ? "border-ink-900 bg-ink-900 text-shell hover:bg-ink-700"
-                        : "border-stone bg-white text-ink-900 hover:border-lagoon-800 hover:bg-lagoon-50",
+                        : "border-stone bg-sand text-ink-900 hover:border-lagoon-800 hover:bg-lagoon-50",
                       isPast && !isBlocked ? "text-ink-300" : "",
                     ].join(" ")}
                   >
