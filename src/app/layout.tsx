@@ -20,6 +20,8 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: `${site.name} - ${site.location}`,
   description: site.description,
+  // TODO: IMAGE REPLACEMENT -> path comes from src/lib/content.ts (site.favicon)
+  icons: { icon: site.favicon },
   openGraph: {
     title: `${site.name} - ${site.location}`,
     description: site.description,

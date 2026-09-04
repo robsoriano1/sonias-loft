@@ -24,6 +24,13 @@ export const site = {
     // Leave as an empty string to hide the Facebook link everywhere.
     facebook: "https://m.me/soniasloft",
   },
+
+  // TODO: IMAGE REPLACEMENT -> /public/images/logo.png  (square mark, transparent background)
+  // Until this file exists, the header just shows the text wordmark - nothing breaks.
+  logo: "/images/logo.png",
+
+  // TODO: IMAGE REPLACEMENT -> /public/images/favicon.ico  (the browser tab icon)
+  favicon: "/images/favicon.ico",
 } as const;
 
 /* --------------------------------------------------------------------------
@@ -158,12 +165,12 @@ export const reviews = {
   heading: "What guests say",
   body: "A few words from people who have stayed.",
   items: [
-    // TODO: REVIEW REPLACEMENT
-    { quote: "", name: "", detail: "" },
-    // TODO: REVIEW REPLACEMENT
-    { quote: "", name: "", detail: "" },
-    // TODO: REVIEW REPLACEMENT
-    { quote: "", name: "", detail: "" },
+    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-01.jpg (3:4)
+    { image: "/images/review-01.jpg", quote: "", name: "", detail: "" },
+    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-02.jpg (3:4)
+    { image: "/images/review-02.jpg", quote: "", name: "", detail: "" },
+    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-03.jpg (3:4)
+    { image: "/images/review-03.jpg", quote: "", name: "", detail: "" },
   ],
 } as const;
 

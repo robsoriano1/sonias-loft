@@ -32,6 +32,18 @@ REQUIRED FILENAMES
                            site on Facebook / Messenger / Viber.
                            (Optional - falls back to hero.jpg.)
 
+  review-01.jpg     3:4    Guest photos for the Reviews section. Optional -
+  review-02.jpg     3:4    each card works fine with just a quote and no
+  review-03.jpg     3:4    photo, or a photo and no quote yet.
+
+  logo.png          any    Square mark for the header, next to "Sonia's
+                           Loft". Transparent background works best.
+                           Optional - the header just shows the text name
+                           until this exists.
+
+  favicon.ico        -     The little icon in the browser tab. Optional -
+                           browsers show a default icon until this exists.
+
 --------------------------------------------------------------------------------
 RULES FROM THE DESIGN SYSTEM (soniasloftdesign.pdf, section 04)
 --------------------------------------------------------------------------------

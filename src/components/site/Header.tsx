@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { nav, site } from "@/lib/content";
@@ -9,6 +10,9 @@ import { buttonClass } from "@/components/ui/Button";
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // TODO: IMAGE REPLACEMENT -> path comes from src/lib/content.ts (site.logo)
+  // Until that file exists, the mark just stays hidden and the text wordmark carries on its own.
+  const [logoMissing, setLogoMissing] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -28,8 +32,18 @@ export function Header() {
       <div className="mx-auto flex h-[4.5rem] w-full max-w-content items-center justify-between px-6 md:px-10">
         <Link
           href="/"
-          className="font-display text-[1.375rem] font-normal tracking-[-0.01em] text-ink-900"
+          className="flex items-center gap-2.5 font-display text-[1.375rem] font-normal tracking-[-0.01em] text-ink-900"
         >
+          {!logoMissing && (
+            <Image
+              src={site.logo}
+              alt=""
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
+              onError={() => setLogoMissing(true)}
+            />
+          )}
           {site.name}
         </Link>
 
