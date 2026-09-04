@@ -27,7 +27,7 @@ export function Hero() {
           priority
           zoomOnHover={false}
           sizes="100vw"
-          className="h-[52vh] sm:h-[62vh] md:h-[72vh] xl:h-[78vh]"
+          className="h-[26vh] sm:h-[31vh] md:h-[36vh] xl:h-[39vh]"
           // The source is a tall portrait shot; a center crop lands on the
           // dim treeline. Bias down toward the lit, textured water instead.
           focalPoint="50% 78%"
