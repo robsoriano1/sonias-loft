@@ -140,7 +140,10 @@ export function CalendarManager({ blocked }: { blocked: string[] }) {
               type="date"
               value={rangeStart}
               onChange={(e) => setRangeStart(e.target.value)}
-              className="mt-2 rounded-sm border border-stone px-3 py-2.5 text-[0.9375rem] focus:border-lagoon-800 focus:outline-none"
+              // color-scheme:dark keeps the browser's own calendar-icon glyph
+              // legible against a dark field instead of rendering it near-black.
+              style={{ colorScheme: "dark" }}
+              className="mt-2 rounded-sm border border-stone bg-sand px-3 py-2.5 text-[0.9375rem] text-ink-900 focus:border-lagoon-800 focus:outline-none"
             />
           </div>
 
@@ -153,7 +156,8 @@ export function CalendarManager({ blocked }: { blocked: string[] }) {
               type="date"
               value={rangeEnd}
               onChange={(e) => setRangeEnd(e.target.value)}
-              className="mt-2 rounded-sm border border-stone px-3 py-2.5 text-[0.9375rem] focus:border-lagoon-800 focus:outline-none"
+              style={{ colorScheme: "dark" }}
+              className="mt-2 rounded-sm border border-stone bg-sand px-3 py-2.5 text-[0.9375rem] text-ink-900 focus:border-lagoon-800 focus:outline-none"
             />
           </div>
 

@@ -161,6 +161,7 @@ export function InquiryForm() {
                     name="check_in"
                     type="date"
                     min={todayKey()}
+                    style={{ colorScheme: "dark" }}
                     className={`${field} mt-3`}
                   />
                 </div>
@@ -174,6 +175,7 @@ export function InquiryForm() {
                     name="check_out"
                     type="date"
                     min={todayKey()}
+                    style={{ colorScheme: "dark" }}
                     className={`${field} mt-3`}
                   />
                 </div>
