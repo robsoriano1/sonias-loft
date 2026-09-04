@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The sticky header is 4.5rem tall; keep anchors clear of it. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    /* Jost body: 16-19px, line-height 1.65-1.75 (design doc, section 03) */
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      font-size: 1.1875rem; /* 19px */
+    }
+  }
+
+  /* Architectural focus ring: a square outline, never a glow. */
+  :focus-visible {
+    outline: 2px solid #0e5e5c;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #e4f2f0;
+    color: #14181a;
+  }
+}
+
+@layer components {
+  /* The skeleton that holds an image slot open until the owner uploads a
+     photo. Sand -> stone -> sand, very slow. Nothing bouncy. */
+  .img-skeleton {
+    background-image: linear-gradient(100deg, #f0ede8 30%, #ddd9d2 50%, #f0ede8 70%);
+    background-size: 220% 100%;
+    animation: img-skeleton-pan 2.8s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+
+  @keyframes img-skeleton-pan {
+    0% {
+      background-position: 130% 0;
+    }
+    100% {
+      background-position: -30% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .img-skeleton {
+      animation: none;
+    }
+    .animate-fade-up {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* Eyebrow label. Tracked +0.2em per the type spec. */
+  .eyebrow {
+    @apply text-eyebrow font-medium uppercase text-brass-600;
+  }
+
+  /* Hairline rule used to separate sections. */
+  .rule {
+    @apply border-t border-stone;
+  }
+}
