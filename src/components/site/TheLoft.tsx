@@ -39,7 +39,11 @@ export function TheLoft() {
           <ImageFrame
             src={theLoft.image}
             alt={theLoft.imageAlt}
-            ratio="16/9"
+            // Portrait, not 16:9 - the source is a tall shot of a double-height
+            // room, and a wide crop was throwing most of that height away.
+            // 3:4 keeps almost the whole frame, so the photo runs taller than
+            // the text column and actually reads as a "very tall living room."
+            ratio="3/4"
             sizes="(min-width: 1024px) 50vw, 100vw"
             onZoom={() => setOpen(true)}
           />
