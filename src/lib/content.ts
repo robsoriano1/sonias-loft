@@ -299,7 +299,7 @@ export const reviews = {
       detail: "Facebook review",
     },
   ],
-} as const;
+};
 
 /* --------------------------------------------------------------------------
  *  RATINGS - the aggregate score shown above the review cards
