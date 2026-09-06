@@ -268,20 +268,36 @@ export const facilities = {
 
 /* --------------------------------------------------------------------------
  *  REVIEWS
- *  TODO: REVIEW REPLACEMENT - swap in real guest reviews here. Add or
- *  remove items freely; the grid reflows on its own.
+ *  Add or remove items freely; the grid reflows on its own.
  * ------------------------------------------------------------------------ */
 export const reviews = {
   eyebrow: "Reviews",
   heading: "What guests say",
   body: "A few words from people who have stayed.",
   items: [
-    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-01.jpg (3:4)
-    { image: "/images/review-01.jpg", quote: "", name: "", detail: "" },
-    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-02.jpg (3:4)
-    { image: "/images/review-02.jpg", quote: "", name: "", detail: "" },
-    // TODO: REVIEW REPLACEMENT + IMAGE REPLACEMENT -> /public/images/review-03.jpg (3:4)
-    { image: "/images/review-03.jpg", quote: "", name: "", detail: "" },
+    // TODO: IMAGE REPLACEMENT -> /public/images/review-01.jpg (3:4) - a guest photo from this stay
+    {
+      image: "/images/review-01.jpg",
+      quote: "Thank you, Sonia's Loft Guest House! Sa uulitin po.",
+      name: "Dawn Grace",
+      detail: "Facebook review",
+    },
+    // TODO: IMAGE REPLACEMENT -> /public/images/review-02.jpg (3:4) - a guest photo from this stay
+    {
+      image: "/images/review-02.jpg",
+      quote:
+        "Sonia's place is perfect for my team building. Very spacious and super clean. All the staff are very accommodating - especially Ate Erlin (Tata). Highly recommended.",
+      name: "Airbnb guest",
+      detail: "5-star review, 1-night stay",
+    },
+    // TODO: IMAGE REPLACEMENT -> /public/images/review-03.jpg (3:4) - a guest photo from this stay
+    {
+      image: "/images/review-03.jpg",
+      quote:
+        "Thank you so much! Your place is very homey, beautiful, and very clean too. We'll recommend it to our friends and family. God bless, Sonia's Loft Guest House.",
+      name: "Vicelle Vicente",
+      detail: "Facebook review",
+    },
   ],
 } as const;
 
