@@ -222,70 +222,47 @@ export const location = {
 } as const;
 
 /* --------------------------------------------------------------------------
- *  FULL AMENITIES LIST - the exhaustive, categorised version shown under
- *  the curated grid above. Add or remove items/groups freely.
+ *  FULL AMENITIES LIST - shown in the "Show all amenities" modal, not
+ *  inline on the page. Deliberately excludes anything already covered by
+ *  the curated grid above (pool, air con, wifi, kitchen, coffee, grill,
+ *  parking, washer/dryer, smart TV, garden, outdoor shower, speaker) so
+ *  the same fact never appears twice under two different names. Add or
+ *  remove items/groups freely - just check the curated grid first.
  * ------------------------------------------------------------------------ */
 export const facilities = {
-  heading: "The full list",
+  heading: "All amenities",
   groups: [
     {
-      category: "Kitchen",
+      category: "Kitchen & Dining",
       items: [
-        "Dishes and dining utensils",
+        "Dishes & dining utensils",
         "Dishwasher",
-        "Kitchen basics (cookware, oils, condiments)",
         "Microwave",
-        "Refrigerator",
-        "Stove",
+        "Kitchen basics (cookware, oils & condiments)",
       ],
     },
     {
-      category: "Bathroom",
-      items: ["Body wash", "Toiletries", "Towels"],
+      category: "Bed & Bath",
+      items: ["Towels", "Toiletries & body wash"],
     },
     {
-      category: "Standard",
-      items: ["Fans (ceiling or portable)"],
-    },
-    {
-      category: "Outdoor",
-      items: ["Balcony or terrace", "BBQ grill", "Garden or backyard"],
+      category: "Outdoor & Pool",
+      items: ["Balcony or terrace"],
     },
     {
       category: "Entertainment",
+      items: ["Board games", "Sound system", "Cable TV channels"],
+    },
+    {
+      category: "Safety & Utilities",
       items: [
-        "Board games",
-        "Sound system",
-        "Video streaming services",
-        "Cable channels",
-        "Internet",
-        "TV",
-        "Wi-Fi",
+        "Professional cleaning between stays",
+        "Hand sanitizer & soap provided",
+        "Doorman on duty",
+        "Fans (ceiling & portable)",
+        "Private entrance",
+        "Desk / workspace",
       ],
-    },
-    {
-      category: "Safety and cleanliness",
-      items: ["Cleaned by professional cleaning company", "Hand sanitizer and soap provided"],
-    },
-    {
-      category: "Comforts",
-      items: ["Air conditioning", "Private entrance"],
-    },
-    {
-      category: "Getting around",
-      items: ["Free parking"],
-    },
-    {
-      category: "Dining, drinking, and snacking",
-      items: ["Coffee or tea", "Kitchen"],
-    },
-    {
-      category: "Layout and furnishings",
-      items: ["Desk/workspace", "Pool"],
-    },
-    {
-      category: "Services and conveniences",
-      items: ["Doorman"],
     },
   ],
 } as const;
