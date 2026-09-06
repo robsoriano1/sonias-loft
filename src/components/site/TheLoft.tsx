@@ -41,9 +41,6 @@ export function TheLoft() {
             alt={theLoft.imageAlt}
             ratio="16/9"
             sizes="(min-width: 1024px) 50vw, 100vw"
-            // Tall portrait source; bias down from a plain center crop so the
-            // lit windows and pool show instead of mostly roofline and sky.
-            focalPoint="50% 60%"
             onZoom={() => setOpen(true)}
           />
         </div>

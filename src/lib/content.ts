@@ -101,7 +101,7 @@ export const theLoft = {
   ],
 
   image: "/images/living.jpg",
-  imageAlt: "The house at dusk, lit from inside, with the pool in front of the folded-back glass doors",
+  imageAlt: "Looking down from the stairs at the double-height living room, its cluster of pendant lights, and the pool through the glass doors",
 } as const;
 
 /* --------------------------------------------------------------------------
