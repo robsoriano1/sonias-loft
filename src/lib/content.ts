@@ -60,8 +60,8 @@ export const hero = {
   subheading: "Three bedrooms, one very tall living room",
   body:
     "The pool is open from sunrise, and the glass doors fold all the way back. Breakfast is whatever you bring; the long teak table seats ten.",
-  primaryCta: { label: "Book your stay", href: "#inquire" },
-  secondaryCta: { label: "View the loft", href: "#gallery" },
+  primaryCta: { label: "Book now", href: "#inquire" },
+  secondaryCta: { label: "View availability", href: "#availability" },
 
   // TODO: IMAGE REPLACEMENT  ->  /public/images/hero.jpg   (16:9, no filter)
   image: "/images/hero.jpg",
