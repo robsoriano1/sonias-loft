@@ -185,10 +185,11 @@ export const amenities = {
 
 /* --------------------------------------------------------------------------
  *  LOCATION - the interactive map, driving times, and nearby landmarks
- *  TODO: ADDRESS -> once you have the exact address/pin, drop it into
- *  mapEmbedSrc and directionsHref below, and tighten the drive times and
- *  landmark distances to match. What's here now is a reasonable placeholder
- *  centred on Antipolo, Rizal generally.
+ *  Pinned to the actual "Sonia's Loft Guest House" listing on Google Maps
+ *  (LOT 2, Ponderosa Heights, Block 6A Cactus Drive, Antipolo, 1870 Rizal -
+ *  14.5742229, 121.164547). If the business ever moves or gets re-listed
+ *  under a different name, search the new address on Google Maps and swap
+ *  the coordinates/name below.
  * ------------------------------------------------------------------------ */
 export const location = {
   eyebrow: "Getting here",
@@ -198,13 +199,12 @@ export const location = {
   roadNote:
     "Roads in are paved and used daily by locals, but expect a real incline with some switchbacks near the top. Drive slow, arrive earlier for sunset check-ins, and let us know if you're bringing anything low to the ground.",
 
-  // TODO: ADDRESS -> swap in your exact address once you have it, e.g.
-  // "https://www.google.com/maps?q=123+Example+St,+Antipolo,+Rizal&output=embed"
-  mapEmbedSrc: "https://www.google.com/maps?q=Antipolo,+Rizal,+Philippines&output=embed",
+  mapEmbedSrc:
+    "https://www.google.com/maps?q=Sonia's+Loft+Guest+House,+Antipolo,+Rizal,+Philippines&output=embed",
   directionsHref:
-    "https://www.google.com/maps/dir/?api=1&destination=Antipolo,+Rizal,+Philippines",
+    "https://www.google.com/maps/dir/?api=1&destination=Sonia's+Loft+Guest+House,+Antipolo,+Rizal,+Philippines",
 
-  // Typical light-traffic driving times. Confirm against your exact address and adjust -
+  // Typical light-traffic driving times from the pinned address above -
   // Metro Manila traffic can easily double these at peak hours.
   driveTimes: [
     { from: "BGC, Taguig", time: "45–60 min" },
