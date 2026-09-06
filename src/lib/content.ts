@@ -100,9 +100,8 @@ export const theLoft = {
     { value: "280m²", label: "Size" },
   ],
 
-  // TODO: IMAGE REPLACEMENT  ->  /public/images/living.jpg   (16:9)
   image: "/images/living.jpg",
-  imageAlt: "The double-height living room with glass doors folded back",
+  imageAlt: "The house at dusk, lit from inside, with the pool in front of the folded-back glass doors",
 } as const;
 
 /* --------------------------------------------------------------------------
