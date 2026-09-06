@@ -38,6 +38,22 @@ export const site = {
 } as const;
 
 /* --------------------------------------------------------------------------
+ *  QUICK CONTACT - the floating WhatsApp / Viber / Messenger button shown
+ *  on every page, for guests who'd rather message than fill out the form.
+ *  TODO: CONTACT -> confirm these are the numbers/handles you want guests
+ *  messaging. Leave any one field as "" to hide that channel's button.
+ * ------------------------------------------------------------------------ */
+export const quickContact = {
+  prefilledMessage: "Hi! I'd like to ask about staying at Sonia's Loft.",
+  // Digits only, country code first, no "+", spaces, or dashes - used in wa.me links.
+  whatsappNumber: "639000000000",
+  // Full international format with "+", no spaces - used in Viber's chat deep link.
+  viberNumber: "+639000000000",
+  // The part after facebook.com/ in your Page URL - used in m.me links.
+  messengerUsername: "SoniasLoftGuestHouse",
+} as const;
+
+/* --------------------------------------------------------------------------
  *  NAVIGATION
  * ------------------------------------------------------------------------ */
 export const nav = [

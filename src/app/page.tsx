@@ -12,6 +12,7 @@ import { Reviews } from "@/components/site/Reviews";
 import { Availability } from "@/components/site/Availability";
 import { InquiryForm } from "@/components/site/InquiryForm";
 import { Footer } from "@/components/site/Footer";
+import { FloatingContact } from "@/components/site/FloatingContact";
 
 // Blocked dates change whenever the owner toggles one, so don't cache the page.
 export const revalidate = 0;
@@ -46,6 +47,7 @@ export default async function HomePage() {
         <InquiryForm />
       </main>
       <Footer />
+      <FloatingContact />
     </>
   );
 }
