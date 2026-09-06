@@ -45,6 +45,7 @@ export const nav = [
   { label: "Gallery", href: "#gallery" },
   { label: "The pool", href: "#the-pool" },
   { label: "Amenities", href: "#amenities" },
+  { label: "Location", href: "#location" },
   { label: "House rules", href: "#house-rules" },
   { label: "Reviews", href: "#reviews" },
   { label: "Availability", href: "#availability" },
@@ -165,6 +166,43 @@ export const amenities = {
     { icon: "trees",   title: "Garden and deck",     detail: "Shaded from four onwards" },
     { icon: "shower",  title: "Outdoor shower",      detail: "Beside the pool" },
     { icon: "speaker", title: "Bluetooth speaker",   detail: "Yours until ten in the evening" },
+  ],
+} as const;
+
+/* --------------------------------------------------------------------------
+ *  LOCATION - the interactive map, driving times, and nearby landmarks
+ *  TODO: ADDRESS -> once you have the exact address/pin, drop it into
+ *  mapEmbedSrc and directionsHref below, and tighten the drive times and
+ *  landmark distances to match. What's here now is a reasonable placeholder
+ *  centred on Antipolo, Rizal generally.
+ * ------------------------------------------------------------------------ */
+export const location = {
+  eyebrow: "Getting here",
+  heading: "Up in the hills above the city",
+  body:
+    "Antipolo sits in the hills east of Metro Manila, so the last stretch in climbs steadily and winds a little. Any car manages it fine - just budget a few extra minutes, especially after dark or in the rain.",
+  roadNote:
+    "Roads in are paved and used daily by locals, but expect a real incline with some switchbacks near the top. Drive slow, arrive earlier for sunset check-ins, and let us know if you're bringing anything low to the ground.",
+
+  // TODO: ADDRESS -> swap in your exact address once you have it, e.g.
+  // "https://www.google.com/maps?q=123+Example+St,+Antipolo,+Rizal&output=embed"
+  mapEmbedSrc: "https://www.google.com/maps?q=Antipolo,+Rizal,+Philippines&output=embed",
+  directionsHref:
+    "https://www.google.com/maps/dir/?api=1&destination=Antipolo,+Rizal,+Philippines",
+
+  // Typical light-traffic driving times. Confirm against your exact address and adjust -
+  // Metro Manila traffic can easily double these at peak hours.
+  driveTimes: [
+    { from: "BGC, Taguig", time: "45–60 min" },
+    { from: "Ortigas, Pasig", time: "35–50 min" },
+    { from: "Quezon City", time: "40–55 min" },
+  ],
+
+  landmarks: [
+    { name: "Pinto Art Museum", detail: "About 10 min by car" },
+    { name: "Hinulugang Taktak", detail: "About 15 min by car" },
+    { name: "Supermarket & groceries", detail: "About 10 min by car" },
+    { name: "Antipolo Cathedral", detail: "About 15 min by car" },
   ],
 } as const;
 

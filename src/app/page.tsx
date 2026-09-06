@@ -6,6 +6,7 @@ import { TheLoft } from "@/components/site/TheLoft";
 import { Gallery } from "@/components/site/Gallery";
 import { Pool } from "@/components/site/Pool";
 import { Amenities } from "@/components/site/Amenities";
+import { Location } from "@/components/site/Location";
 import { HouseRules } from "@/components/site/HouseRules";
 import { Reviews } from "@/components/site/Reviews";
 import { Availability } from "@/components/site/Availability";
@@ -38,6 +39,7 @@ export default async function HomePage() {
         <Gallery />
         <Pool />
         <Amenities />
+        <Location />
         <HouseRules />
         <Reviews />
         <Availability blocked={blocked} />
