@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { SUPABASE_CONFIGURED } from "@/lib/supabase/config";
 import { MAIL_CONFIGURED, ownerNewInquiryEmail, sendEmail } from "@/lib/notify";
-import { site } from "@/lib/content";
+import { siteUrl } from "@/lib/site-url";
 import type { Inquiry, InquirySource } from "@/lib/types";
 import { INQUIRY_SOURCES } from "@/lib/types";
 
@@ -99,7 +99,7 @@ async function notifyOwner(inquiry: Inquiry): Promise<void> {
     const to = (address as string | null) ?? process.env.NOTIFY_TO ?? "";
     if (!to) return;
 
-    const { subject, html } = ownerNewInquiryEmail(inquiry, `${site.url}/admin`);
+    const { subject, html } = ownerNewInquiryEmail(inquiry, `${siteUrl()}/admin`);
     const result = await sendEmail({ to, subject, html, replyTo: inquiry.email });
 
     // Anon may insert an enquiry but not update one, so this goes through the

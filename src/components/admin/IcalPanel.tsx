@@ -1,4 +1,4 @@
-import { site } from "@/lib/content";
+import { siteUrl } from "@/lib/site-url";
 import { importIcalFeed } from "@/app/admin/actions";
 import { Button } from "@/components/ui/Button";
 
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
    rendered behind the owner's session. */
 export function IcalPanel() {
   const token = process.env.ICAL_TOKEN;
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? site.url;
+  const base = siteUrl();
   const feedUrl = token ? `${base}/api/calendar/${token}` : null;
 
   return (
