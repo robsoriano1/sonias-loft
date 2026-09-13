@@ -5,11 +5,16 @@ import { needingReply, responseState } from "@/lib/pipeline";
 import { arrivalsBetween, departuresBetween } from "@/lib/availability";
 import { monthPerformance, formatPeso } from "@/lib/rates";
 import { INQUIRY_SOURCES } from "@/lib/types";
-import { addMonths, formatDayMonth, todayKey } from "@/lib/dates";
+import { addDays, addMonths, formatDayMonth, todayKey } from "@/lib/dates";
 import { MONTH_NAMES } from "@/lib/dates";
+import { MAIL_CONFIGURED } from "@/lib/notify";
 import { ResponseBadge } from "@/components/admin/ResponseBadge";
 
 export const revalidate = 0;
+
+/* How far back a missing notification is still worth mentioning. Older than
+   this and nobody can do anything about it. */
+const NOTIFY_WARNING_DAYS = 7;
 
 export default async function DashboardPage() {
   const [{ inquiries, holds, settings, rateRules, error }, flagged] = await Promise.all([
@@ -27,7 +32,15 @@ export default async function DashboardPage() {
   const open = needingReply(inquiries);
   const oldest = open[0];
   const overdue = open.filter((i) => responseState(i, now.toISOString()).overdue);
-  const unnotified = inquiries.filter((i) => i.status === "new" && !i.notified_at);
+
+  /* Only recent enquiries. notified_at did not exist before the migration, so
+     every enquiry taken before then is null and would otherwise be reported
+     as a failed send forever - and a notification that failed months ago is
+     not something anyone can act on now anyway. */
+  const notifyCutoff = addDays(today, -NOTIFY_WARNING_DAYS);
+  const unnotified = inquiries.filter(
+    (i) => i.status === "new" && !i.notified_at && i.created_at.slice(0, 10) >= notifyCutoff,
+  );
 
   const arrivals = arrivalsBetween(holds, today, 7);
   const departures = departuresBetween(holds, today, 7);
@@ -110,13 +123,34 @@ export default async function DashboardPage() {
           </p>
         )}
 
+        {/* Two different problems wearing the same symptom, so they get two
+            different sentences: email was never switched on, or it is on and
+            a send failed. Only the second is a fault. */}
         {unnotified.length > 0 && (
-          <p className="mt-7 flex items-start gap-2.5 rounded-sm border border-teak-600 px-4 py-3 text-[0.8125rem] leading-[1.6] text-teak-600">
+          <p
+            className={`mt-7 flex items-start gap-2.5 rounded-sm border px-4 py-3 text-[0.8125rem] leading-[1.6] ${
+              MAIL_CONFIGURED ? "border-teak-600 text-teak-600" : "border-stone text-ink-500"
+            }`}
+          >
             <MailWarning className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.5} />
             <span>
-              {unnotified.length} new {unnotified.length === 1 ? "enquiry" : "enquiries"} arrived
-              without an email notification going out. Check RESEND_API_KEY and the notification
-              address in Settings.
+              {MAIL_CONFIGURED ? (
+                <>
+                  The alert for {unnotified.length === 1 ? "a new enquiry" : `${unnotified.length} new enquiries`}{" "}
+                  did not send. Check the notification address in{" "}
+                  <Link href="/admin/settings" className="underline underline-offset-4">
+                    Settings
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>
+                  Email alerts are not switched on yet, so nobody was told about{" "}
+                  {unnotified.length === 1 ? "a new enquiry" : `${unnotified.length} new enquiries`}{" "}
+                  from the last {NOTIFY_WARNING_DAYS} days. Enquiries are still being saved
+                  safely - they just need somebody to look here.
+                </>
+              )}
             </span>
           </p>
         )}
