@@ -26,6 +26,13 @@ const FROM = process.env.NOTIFY_FROM ?? "Sonia's Loft <onboarding@resend.dev>";
 
 export const MAIL_CONFIGURED = Boolean(API_KEY);
 
+/** The sender in use, for error messages. Not a secret. */
+export const FROM_ADDRESS = FROM;
+
+/** True while falling back to Resend's shared test sender, which can only
+    deliver to the address that owns the Resend account. */
+export const USING_TEST_SENDER = !process.env.NOTIFY_FROM;
+
 export type SendResult = { ok: true } | { ok: false; error: string };
 
 export async function sendEmail(message: {

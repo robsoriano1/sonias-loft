@@ -7,11 +7,13 @@ import { statusPatch } from "@/lib/pipeline";
 import { validateStay, canConfirm } from "@/lib/availability";
 import { parseIcal } from "@/lib/ical";
 import {
+  FROM_ADDRESS,
   guestConfirmationEmail,
   guestReviewRequestEmail,
   MAIL_CONFIGURED,
   sendEmail,
 } from "@/lib/notify";
+import { site } from "@/lib/content";
 import { CONTENT_KEYS, DEFAULT_SETTINGS } from "@/lib/types";
 import type {
   ContentKey,
@@ -537,6 +539,42 @@ export async function deleteIncident(id: string, holdId: string) {
   const supabase = await requireUser();
   await supabase.from("incidents").delete().eq("id", id);
   revalidatePath(`/admin/bookings/${holdId}`);
+}
+
+/* Sends a real email to the configured address and hands back whatever the
+   provider said, verbatim. Diagnosing a delivery problem by submitting fake
+   enquiries and watching a banner is no way to spend an afternoon - the
+   provider already knows what is wrong, this just asks it. */
+export async function sendTestEmail(): Promise<ActionResult> {
+  const supabase = await requireUser();
+
+  if (!MAIL_CONFIGURED) {
+    return {
+      ok: false,
+      error:
+        "RESEND_API_KEY is not set in this environment. On Vercel, add it and redeploy - saving the variable alone does not affect the running site.",
+    };
+  }
+
+  const { data } = await supabase.from("settings").select("notify_email").eq("id", 1).maybeSingle();
+  const to = (data as { notify_email: string | null } | null)?.notify_email ?? process.env.NOTIFY_TO;
+
+  if (!to) {
+    return { ok: false, error: "No notification address set. Fill in the field above and save." };
+  }
+
+  const result = await sendEmail({
+    to,
+    subject: `Test from ${site.name}`,
+    html: `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.65;color:#1c1a17">
+      <p>This is a test from the owner dashboard.</p>
+      <p>If you are reading it, new-enquiry alerts will reach you here.</p>
+    </div>`,
+  });
+
+  if (result.ok) return { ok: true, message: `Sent to ${to}. Check that inbox, and the spam folder.` };
+
+  return { ok: false, error: `${FROM_ADDRESS} to ${to} was rejected: ${result.error}` };
 }
 
 /* ==========================================================================

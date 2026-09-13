@@ -1,10 +1,11 @@
 import { loadAdminData, loadPeople } from "@/lib/admin-data";
 import { saveSettings } from "@/app/admin/actions";
-import { MAIL_CONFIGURED } from "@/lib/notify";
+import { MAIL_CONFIGURED, USING_TEST_SENDER } from "@/lib/notify";
 import { requireOwner } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
 import { RateCard } from "@/components/admin/RateCard";
 import { PeoplePanel } from "@/components/admin/PeoplePanel";
+import { TestEmailButton } from "@/components/admin/TestEmailButton";
 
 export const revalidate = 0;
 
@@ -37,6 +38,18 @@ export default async function SettingsPage() {
           Email is switched off because <code>RESEND_API_KEY</code> is not set in Vercel. New
           enquiries will still be saved, but nobody will be told about them and guests will not get
           their confirmation.
+        </p>
+      )}
+
+      {/* The single most common reason a send is rejected, said out loud
+          before it costs anyone an afternoon. */}
+      {MAIL_CONFIGURED && USING_TEST_SENDER && (
+        <p className="mt-8 rounded-sm border border-brass-400 bg-sand px-5 py-4 text-[0.875rem] leading-[1.65] text-ink-700">
+          <code>NOTIFY_FROM</code> is not set, so mail is going out from Resend&apos;s shared
+          address <code>onboarding@resend.dev</code>. Resend only delivers that to the one email
+          address that owns your Resend account - everything else is rejected. Owner alerts to that
+          address will work; confirmations to guests will not. Verify a domain in Resend and set{" "}
+          <code>NOTIFY_FROM</code> to fix it properly.
         </p>
       )}
 
@@ -125,6 +138,9 @@ export default async function SettingsPage() {
                 className={`${field} mt-3`}
               />
               <p className={hint}>Where the alert lands the moment somebody enquires.</p>
+              <div className="mt-4">
+                <TestEmailButton />
+              </div>
             </div>
 
             <div>
