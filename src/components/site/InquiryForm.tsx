@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { SUPABASE_CONFIGURED } from "@/lib/supabase/config";
+import { submitInquiry } from "@/app/actions";
 import { enquiry, houseNotes, site } from "@/lib/content";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { Button, buttonClass } from "@/components/ui/Button";
@@ -24,38 +23,23 @@ export function InquiryForm() {
     setError("");
 
     const data = new FormData(event.currentTarget);
-    const checkIn = String(data.get("check_in") ?? "");
-    const checkOut = String(data.get("check_out") ?? "");
 
-    if (checkIn && checkOut && checkOut <= checkIn) {
-      setStatus("error");
-      setError("Check-out needs to be after check-in.");
-      return;
-    }
-
-    if (!SUPABASE_CONFIGURED) {
-      setStatus("error");
-      setError(
-        "The site is not connected to its database yet. Copy .env.local.example to .env.local and add your Supabase keys.",
-      );
-      return;
-    }
-
-    const guestsRaw = String(data.get("guests") ?? "");
-
-    const { error: insertError } = await createClient().from("inquiries").insert({
-      name: String(data.get("name") ?? "").trim(),
-      email: String(data.get("email") ?? "").trim(),
-      phone: String(data.get("phone") ?? "").trim() || null,
-      check_in: checkIn || null,
-      check_out: checkOut || null,
-      guests: guestsRaw ? Number(guestsRaw) : null,
-      message: String(data.get("message") ?? "").trim() || null,
+    /* Submitting goes through a server action rather than straight to
+       Supabase from here, so the owner gets notified the moment this lands
+       instead of whenever someone next opens the dashboard. */
+    const result = await submitInquiry({
+      name: String(data.get("name") ?? ""),
+      email: String(data.get("email") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      guests: String(data.get("guests") ?? ""),
+      checkIn: String(data.get("check_in") ?? ""),
+      checkOut: String(data.get("check_out") ?? ""),
+      message: String(data.get("message") ?? ""),
     });
 
-    if (insertError) {
+    if (!result.ok) {
       setStatus("error");
-      setError("Something went wrong sending that. Please try again, or message us on Facebook.");
+      setError(result.error);
       return;
     }
 

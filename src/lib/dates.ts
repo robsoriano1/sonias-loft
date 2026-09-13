@@ -73,3 +73,59 @@ export function nightsBetween(checkIn: string, checkOut: string): string[] {
   }
   return out;
 }
+
+/** Shift a date key by whole days. Negative deltas go backwards. */
+export function addDays(key: string, delta: number): string {
+  const date = new Date(key + "T00:00:00");
+  date.setDate(date.getDate() + delta);
+  return toKey(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+/** How many nights a stay covers. Zero if the dates are inverted. */
+export function countNights(checkIn: string, checkOut: string): number {
+  const ms = new Date(checkOut + "T00:00:00").getTime() - new Date(checkIn + "T00:00:00").getTime();
+  return Math.max(0, Math.round(ms / 86_400_000));
+}
+
+/** 0 = Sunday, 6 = Saturday. */
+export function weekdayOf(key: string): number {
+  return new Date(key + "T00:00:00").getDay();
+}
+
+/* A *weekend night* is the night you go to sleep on a Friday or a Saturday -
+   i.e. a Fri->Sat or Sat->Sun stay. That is what "two-night minimum on
+   weekends" means in practice, and it is the rule the public page states. */
+export function isWeekendNight(key: string): boolean {
+  const day = weekdayOf(key);
+  return day === 5 || day === 6;
+}
+
+/** Do two half-open [start, end) ranges share at least one night? */
+export function rangesOverlap(aIn: string, aOut: string, bIn: string, bOut: string): boolean {
+  return aIn < bOut && bIn < aOut;
+}
+
+/** First and last day of a month, as keys. */
+export function monthBounds(year: number, month: number): { start: string; end: string } {
+  return { start: toKey(year, month, 1), end: toKey(year, month, daysInMonth(year, month)) };
+}
+
+/** Whole hours between two ISO timestamps. Used by the response-time badge. */
+export function hoursBetween(fromIso: string, toIso: string): number {
+  const ms = new Date(toIso).getTime() - new Date(fromIso).getTime();
+  return Math.max(0, Math.floor(ms / 3_600_000));
+}
+
+/** "3h", "2d" - the compact form the enquiry list uses. */
+export function formatElapsed(hours: number): string {
+  if (hours < 1) return "just now";
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
+}
+
+/** "2026-09-14T00:00:00Z" -> "14 Sep". Short label for dashboard rows. */
+export function formatDayMonth(key: string): string {
+  const [, m, d] = key.split("-").map(Number);
+  if (!m || !d) return key;
+  return `${d} ${MONTH_NAMES[m - 1].slice(0, 3)}`;
+}
