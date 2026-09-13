@@ -1,6 +1,6 @@
 import { loadAdminData, loadPeople } from "@/lib/admin-data";
 import { saveSettings } from "@/app/admin/actions";
-import { MAIL_CONFIGURED, USING_TEST_SENDER } from "@/lib/notify";
+import { MAIL_CONFIGURED, USING_TEST_SENDER, senderProblem } from "@/lib/notify";
 import { requireOwner } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
 import { RateCard } from "@/components/admin/RateCard";
@@ -38,6 +38,14 @@ export default async function SettingsPage() {
           Email is switched off because <code>RESEND_API_KEY</code> is not set in Vercel. New
           enquiries will still be saved, but nobody will be told about them and guests will not get
           their confirmation.
+        </p>
+      )}
+
+      {/* A malformed sender fails every single send, so it goes above
+          everything else and quotes the value back. */}
+      {MAIL_CONFIGURED && senderProblem() && (
+        <p className="mt-8 rounded-sm border border-teak-600 bg-sand px-5 py-4 text-[0.875rem] leading-[1.65] text-teak-600">
+          {senderProblem()}
         </p>
       )}
 

@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import type { Hold, Inquiry, Settings } from "./types";
 import { location, site } from "./content";
 import { formatDateKey, countNights } from "./dates";
+import { validateSender } from "./sender";
 
 /* ============================================================================
  *  Outbound email. Resend, wrapped thin.
@@ -33,6 +34,12 @@ export const FROM_ADDRESS = FROM;
     deliver to the address that owns the Resend account. */
 export const USING_TEST_SENDER = !process.env.NOTIFY_FROM;
 
+/** Null when the sender is well-formed, otherwise a sentence saying what is
+    wrong with it. Checked before any send so a typo fails loudly and once. */
+export function senderProblem(): string | null {
+  return validateSender(FROM);
+}
+
 export type SendResult = { ok: true } | { ok: false; error: string };
 
 export async function sendEmail(message: {
@@ -47,6 +54,10 @@ export async function sendEmail(message: {
   if (!message.to) {
     return { ok: false, error: "No destination address." };
   }
+
+  // Caught here rather than at the API, so the message names the variable.
+  const badSender = senderProblem();
+  if (badSender) return { ok: false, error: badSender };
 
   try {
     const { error } = await new Resend(API_KEY).emails.send({
