@@ -1,8 +1,10 @@
-import { loadAdminData } from "@/lib/admin-data";
+import { loadAdminData, loadPeople } from "@/lib/admin-data";
 import { saveSettings } from "@/app/admin/actions";
 import { MAIL_CONFIGURED } from "@/lib/notify";
+import { requireOwner } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
 import { RateCard } from "@/components/admin/RateCard";
+import { PeoplePanel } from "@/components/admin/PeoplePanel";
 
 export const revalidate = 0;
 
@@ -12,7 +14,11 @@ const label = "block text-[0.6875rem] uppercase tracking-[0.2em] text-ink-500";
 const hint = "mt-2 text-[0.78125rem] leading-[1.6] text-ink-300";
 
 export default async function SettingsPage() {
-  const { settings, rateRules, error } = await loadAdminData();
+  const [user, { settings, rateRules, error }, people] = await Promise.all([
+    requireOwner(),
+    loadAdminData(),
+    loadPeople(),
+  ]);
 
   return (
     <div>
@@ -188,6 +194,18 @@ export default async function SettingsPage() {
 
         <div className="mt-8">
           <RateCard rules={rateRules} />
+        </div>
+      </section>
+
+      {/* People */}
+      <section className="mt-14">
+        <p className="eyebrow">Access</p>
+        <h2 className="mt-4 font-display text-[1.875rem] font-light text-ink-900">
+          Who can sign in
+        </h2>
+
+        <div className="mt-8">
+          <PeoplePanel people={people} currentUserId={user.id} />
         </div>
       </section>
     </div>

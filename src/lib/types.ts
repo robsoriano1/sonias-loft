@@ -133,3 +133,92 @@ export type Incident = {
   amount: number | null;
   status: IncidentStatus;
 };
+
+/* --------------------------------------------------------------------------
+ *  Phase 5 - roles and the turnover checklist
+ * ------------------------------------------------------------------------ */
+
+export type Role = "owner" | "staff";
+
+export type Profile = {
+  id: string;
+  created_at: string;
+  role: Role;
+  display_name: string | null;
+};
+
+/** Everything staff are allowed to know about a stay. Deliberately has no
+    money, no note and no link back to the enquiry. Mirrors the staff_stays
+    view, which is where the restriction is actually enforced. */
+export type StaffStay = {
+  id: string;
+  guest_name: string;
+  check_in: string;
+  check_out: string;
+  status: HoldStatus;
+};
+
+export type Turnover = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  hold_id: string;
+  due_on: string;
+  cleaning_done: boolean;
+  restock_done: boolean;
+  pool_done: boolean;
+  damage_checked: boolean;
+  damage_found: boolean;
+  notes: string | null;
+  completed_at: string | null;
+  completed_by: string | null;
+};
+
+export const TURNOVER_TASKS = [
+  { key: "cleaning_done", label: "Cleaning", detail: "Rooms, bathrooms, kitchen, floors" },
+  { key: "restock_done", label: "Restock", detail: "Towels, toiletries, coffee, bin liners" },
+  { key: "pool_done", label: "Pool check", detail: "Skim, water level, pump running" },
+  { key: "damage_checked", label: "Damage check", detail: "Walk the house and the deck" },
+] as const;
+
+export type TurnoverTaskKey = (typeof TURNOVER_TASKS)[number]["key"];
+
+/** Every box ticked - what turns a turnover green in the list. */
+export function isTurnoverComplete(turnover: Turnover): boolean {
+  return TURNOVER_TASKS.every((task) => turnover[task.key]);
+}
+
+/* --------------------------------------------------------------------------
+ *  Phase 6 - owner-editable content
+ * ------------------------------------------------------------------------ */
+
+export const CONTENT_KEYS = ["gallery", "amenities", "house_rules", "reviews"] as const;
+export type ContentKey = (typeof CONTENT_KEYS)[number];
+
+export type ContentBlock = {
+  key: ContentKey;
+  value: unknown;
+  updated_at: string;
+};
+
+/* The icon names the amenities grid knows how to draw. Anything else falls
+   back to a tick, so this list is what the editor offers rather than a hard
+   constraint. Keep it in step with the ICONS map in site/Amenities.tsx. */
+export const AMENITY_ICONS = [
+  "waves",
+  "wind",
+  "wifi",
+  "kitchen",
+  "car",
+  "tv",
+  "trees",
+  "shower",
+  "coffee",
+  "washer",
+  "grill",
+  "speaker",
+] as const;
+
+export type GalleryItem = { src: string; alt: string; ratio: "16/9" | "3/4" };
+export type AmenityItem = { icon: string; title: string; detail: string };
+export type ReviewItem = { image: string; quote: string; name: string; detail: string };

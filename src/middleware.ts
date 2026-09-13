@@ -28,24 +28,41 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isLoginPage = pathname === "/admin/login";
+  const isGuarded = pathname.startsWith("/admin") || pathname.startsWith("/staff");
 
-  if (!user && pathname.startsWith("/admin") && !isLoginPage) {
+  if (!user && isGuarded && !isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (user && isLoginPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin";
-    url.search = "";
-    return NextResponse.redirect(url);
+  /* Staff have exactly one screen. Sending them there rather than showing an
+     owner page they cannot load keeps the boundary legible - the pages
+     themselves re-check, and RLS is what actually enforces it. */
+  if (user && (isLoginPage || pathname.startsWith("/admin"))) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    // No row means migration 002 has not run yet: treat as owner, which is
+    // how this install behaved before roles existed.
+    const role = (data as { role: string } | null)?.role ?? "owner";
+    const home = role === "owner" ? "/admin" : "/staff";
+
+    if (isLoginPage || (role !== "owner" && pathname.startsWith("/admin"))) {
+      const url = request.nextUrl.clone();
+      url.pathname = home;
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/staff/:path*", "/staff"],
 };

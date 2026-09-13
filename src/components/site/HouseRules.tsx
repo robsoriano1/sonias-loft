@@ -2,7 +2,8 @@ import { Check } from "lucide-react";
 import { houseRules } from "@/lib/content";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 
-export function HouseRules() {
+/* items defaults to what ships in content.ts - see Gallery for why. */
+export function HouseRules({ items = houseRules.items as readonly string[] }: { items?: readonly string[] }) {
   return (
     <Section id="house-rules" ruled>
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
@@ -15,7 +16,7 @@ export function HouseRules() {
         <div className="hidden lg:col-span-1 lg:block" aria-hidden="true" />
 
         <ul className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:col-span-7">
-          {houseRules.items.map((rule) => (
+          {items.map((rule) => (
             <li key={rule} className="flex gap-3 text-[0.875rem] leading-[1.65] text-ink-500">
               <Check className="mt-1 h-3.5 w-3.5 shrink-0 text-lagoon-800" strokeWidth={1.5} />
               {rule}

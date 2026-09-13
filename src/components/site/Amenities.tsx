@@ -18,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { amenities, facilities } from "@/lib/content";
+import type { AmenityItem } from "@/lib/types";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { Modal } from "@/components/ui/Modal";
 import { buttonClass } from "@/components/ui/Button";
@@ -46,12 +47,13 @@ const ICONS: Record<string, LucideIcon> = {
  *  amenities" in a modal, categorised, with nothing that already appears
  *  above repeated under a different generic name.
  * ========================================================================== */
-export function Amenities() {
+/* items defaults to what ships in content.ts - see Gallery for why. */
+export function Amenities({ items = amenities.items as readonly AmenityItem[] }: { items?: readonly AmenityItem[] }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
 
   const extraCount = facilities.groups.reduce((count, group) => count + group.items.length, 0);
-  const totalCount = amenities.items.length + extraCount;
+  const totalCount = items.length + extraCount;
 
   return (
     <Section id="amenities" ruled>
@@ -66,7 +68,7 @@ export function Amenities() {
 
         <div className="lg:col-span-7">
           <ul className="grid gap-x-10 gap-y-9 sm:grid-cols-2">
-            {amenities.items.map((item) => {
+            {items.map((item) => {
               const Icon = ICONS[item.icon] ?? Check;
               return (
                 <li key={item.title} className="flex gap-4">

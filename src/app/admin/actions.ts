@@ -12,14 +12,16 @@ import {
   MAIL_CONFIGURED,
   sendEmail,
 } from "@/lib/notify";
-import { DEFAULT_SETTINGS } from "@/lib/types";
+import { CONTENT_KEYS, DEFAULT_SETTINGS } from "@/lib/types";
 import type {
+  ContentKey,
   Hold,
   HoldStatus,
   IncidentKind,
   IncidentStatus,
   Inquiry,
   InquiryStatus,
+  Role,
   Settings,
 } from "@/lib/types";
 
@@ -40,6 +42,20 @@ function refreshAdmin() {
   revalidatePath("/admin/enquiries");
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/settings");
+  revalidatePath("/admin/content");
+  revalidatePath("/staff");
+}
+
+/* A confirmed stay is a house that will need turning around, so the staff
+   checklist appears on its own rather than waiting for someone to remember.
+   Unique on hold_id, so re-confirming never duplicates it. */
+async function ensureTurnover(
+  supabase: Awaited<ReturnType<typeof requireUser>>,
+  hold: Pick<Hold, "id" | "check_out">,
+) {
+  await supabase
+    .from("turnovers")
+    .upsert({ hold_id: hold.id, due_on: hold.check_out }, { onConflict: "hold_id" });
 }
 
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
@@ -189,6 +205,7 @@ export async function saveHold(input: HoldInput): Promise<ActionResult> {
 
   // Confirming is the moment the guest should hear from us.
   if (input.status === "confirmed") {
+    await ensureTurnover(supabase, data as Hold);
     await sendConfirmationIfNeeded(data as Hold);
   }
 
@@ -230,7 +247,10 @@ export async function setHoldStatus(id: string, status: HoldStatus): Promise<Act
   refreshAdmin();
   revalidatePath("/");
 
-  if (status === "confirmed") await sendConfirmationIfNeeded({ ...hold, status });
+  if (status === "confirmed") {
+    await ensureTurnover(supabase, hold);
+    await sendConfirmationIfNeeded({ ...hold, status });
+  }
 
   return { ok: true };
 }
@@ -517,6 +537,87 @@ export async function deleteIncident(id: string, holdId: string) {
   const supabase = await requireUser();
   await supabase.from("incidents").delete().eq("id", id);
   revalidatePath(`/admin/bookings/${holdId}`);
+}
+
+/* ==========================================================================
+ *  Phase 5 - who can sign in
+ * ======================================================================== */
+
+/* Accounts are created in the Supabase dashboard and land as staff. This is
+   how someone gets promoted, and how a departing owner gets stepped down.
+   Demoting yourself is refused - it would lock the last owner out of the
+   only screen that can undo it. */
+export async function setUserRole(userId: string, role: Role): Promise<ActionResult> {
+  const supabase = await requireUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user && user.id === userId && role !== "owner") {
+    return { ok: false, error: "You cannot step yourself down. Ask another owner to do it." };
+  }
+
+  const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  if (error) return { ok: false, error: "Could not change that. Are you still signed in?" };
+
+  refreshAdmin();
+  return { ok: true };
+}
+
+export async function setDisplayName(userId: string, name: string): Promise<ActionResult> {
+  const supabase = await requireUser();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ display_name: name.trim() || null })
+    .eq("id", userId);
+
+  if (error) return { ok: false, error: "Could not save that name." };
+
+  refreshAdmin();
+  return { ok: true };
+}
+
+/* ==========================================================================
+ *  Phase 6 - content the owner edits without a redeploy
+ * ======================================================================== */
+
+/* Stored as one JSON blob per section. Saving an empty list deletes the row
+   instead, which puts that section back to what ships in the code rather
+   than leaving a blank gallery on the landing page. */
+export async function saveContentBlock(key: ContentKey, value: unknown): Promise<ActionResult> {
+  const supabase = await requireUser();
+
+  if (!CONTENT_KEYS.includes(key)) return { ok: false, error: "Unknown section." };
+
+  const emptied = Array.isArray(value) && value.length === 0;
+
+  const { error } = emptied
+    ? await supabase.from("content_blocks").delete().eq("key", key)
+    : await supabase
+        .from("content_blocks")
+        .upsert(
+          { key, value, updated_at: new Date().toISOString() },
+          { onConflict: "key" },
+        );
+
+  if (error) return { ok: false, error: "Could not save that. Try again." };
+
+  refreshAdmin();
+  revalidatePath("/");
+  return { ok: true };
+}
+
+/** Put one section back to what ships in src/lib/content.ts. */
+export async function resetContentBlock(key: ContentKey): Promise<ActionResult> {
+  const supabase = await requireUser();
+  const { error } = await supabase.from("content_blocks").delete().eq("key", key);
+  if (error) return { ok: false, error: "Could not reset that section." };
+
+  refreshAdmin();
+  revalidatePath("/");
+  return { ok: true };
 }
 
 export async function signOut() {

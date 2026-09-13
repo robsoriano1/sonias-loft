@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Quote } from "lucide-react";
 import { ratings, reviews } from "@/lib/content";
+import type { ReviewItem } from "@/lib/types";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { Lightbox } from "@/components/ui/Lightbox";
@@ -13,7 +14,8 @@ import { Lightbox } from "@/components/ui/Lightbox";
  *  ImageFrame) so there is always a space for guest pictures, even before
  *  any are uploaded. Quote and name only render once filled in.
  * ========================================================================== */
-export function Reviews() {
+/* items defaults to what ships in content.ts - see Gallery for why. */
+export function Reviews({ items = reviews.items as readonly ReviewItem[] }: { items?: readonly ReviewItem[] }) {
   const [index, setIndex] = useState<number | null>(null);
 
   return (
@@ -50,7 +52,7 @@ export function Reviews() {
       </dl>
 
       <ul className="mt-12 grid gap-6 md:grid-cols-3">
-        {reviews.items.map((item, i) => (
+        {items.map((item, i) => (
           <li
             key={i}
             className="overflow-hidden rounded-md border border-stone bg-sand"

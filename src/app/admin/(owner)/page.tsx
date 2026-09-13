@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight, MailWarning } from "lucide-react";
-import { loadAdminData } from "@/lib/admin-data";
+import { loadAdminData, loadFlaggedTurnovers } from "@/lib/admin-data";
 import { needingReply, responseState } from "@/lib/pipeline";
 import { arrivalsBetween, departuresBetween } from "@/lib/availability";
 import { monthPerformance, formatPeso } from "@/lib/rates";
@@ -12,7 +12,12 @@ import { ResponseBadge } from "@/components/admin/ResponseBadge";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-  const { inquiries, holds, settings, rateRules, error } = await loadAdminData();
+  const [{ inquiries, holds, settings, rateRules, error }, flagged] = await Promise.all([
+    loadAdminData(),
+    loadFlaggedTurnovers(),
+  ]);
+
+  const holdsById = Object.fromEntries(holds.map((hold) => [hold.id, hold]));
 
   const today = todayKey();
   const now = new Date();
@@ -116,6 +121,60 @@ export default async function DashboardPage() {
           </p>
         )}
       </section>
+
+      {/* What the staff have flagged. Unpriced on purpose - they report it,
+          the owner decides what it costs. */}
+      {flagged.length > 0 && (
+        <section className="mt-14">
+          <p className="eyebrow">Flagged by staff</p>
+
+          <ul className="mt-6 space-y-3">
+            {flagged.map((turnover) => {
+              const hold = holdsById[turnover.hold_id];
+
+              return (
+                <li
+                  key={turnover.id}
+                  className="rounded-md border border-teak-600 bg-sand px-5 py-4"
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <p className="text-[0.9375rem] text-ink-900">
+                      {hold ? (
+                        <Link
+                          href={`/admin/bookings/${hold.id}`}
+                          className="underline decoration-stone underline-offset-4 hover:decoration-ink-900"
+                        >
+                          {hold.guest_name}
+                        </Link>
+                      ) : (
+                        "A stay"
+                      )}
+                    </p>
+                    <span className="text-[0.8125rem] tabular-nums text-ink-500">
+                      out {formatDayMonth(turnover.due_on)}
+                    </span>
+                  </div>
+
+                  {turnover.notes && (
+                    <p className="mt-2 text-[0.875rem] leading-[1.65] text-ink-500">
+                      {turnover.notes}
+                    </p>
+                  )}
+
+                  {hold && (
+                    <Link
+                      href={`/admin/bookings/${hold.id}`}
+                      className="mt-3 inline-block text-[0.8125rem] text-brass-600 underline decoration-brass-400 underline-offset-4"
+                    >
+                      Log it as a charge
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* Next seven days */}
       <section className="mt-14">

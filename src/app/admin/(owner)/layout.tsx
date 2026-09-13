@@ -5,12 +5,19 @@ import { site } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { signOut } from "../actions";
 import { OwnerNav } from "@/components/admin/OwnerNav";
+import { requireOwner } from "@/lib/roles";
 
 export const revalidate = 0;
 
 /* The chrome every signed-in owner screen sits inside. /admin/login is
-   deliberately outside this route group so it keeps its own bare layout. */
-export default function OwnerLayout({ children }: { children: ReactNode }) {
+   deliberately outside this route group so it keeps its own bare layout.
+
+   The role check here covers every page in the group; row-level security is
+   what actually stops a staff account reading any of this, so the redirect
+   is about not showing someone a screen that would only render empty. */
+export default async function OwnerLayout({ children }: { children: ReactNode }) {
+  await requireOwner();
+
   return (
     <div className="min-h-screen bg-shell">
       <header className="sticky top-0 z-40 border-b border-stone bg-shell/95 shadow-lift backdrop-blur-sm">

@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { Facebook } from "lucide-react";
 import { gallery, site } from "@/lib/content";
+import type { GalleryItem } from "@/lib/types";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { Lightbox } from "@/components/ui/Lightbox";
 import { Section, SectionHeading, Lede } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
 
-export function Gallery() {
+/* items defaults to what ships in content.ts, so this still renders correctly
+   if the owner has never edited the gallery - or if the database is down. */
+export function Gallery({ items = gallery.items as readonly GalleryItem[] }: { items?: readonly GalleryItem[] }) {
   const [index, setIndex] = useState<number | null>(null);
 
   return (
@@ -35,9 +38,9 @@ export function Gallery() {
       {/* Masonry columns, not a grid - a 3:4 and a 16:9 photo can sit side
           by side without leaving a ragged gap under the shorter one. */}
       <div className="mt-14 columns-1 gap-4 sm:columns-2 lg:columns-3 lg:gap-5">
-        {gallery.items.map((item, i) => (
+        {items.map((item, i) => (
           // TODO: IMAGE REPLACEMENT -> paths come from src/lib/content.ts (gallery.items)
-          <div key={item.src} className="mb-4 break-inside-avoid lg:mb-5">
+          <div key={`${item.src}-${i}`} className="mb-4 break-inside-avoid lg:mb-5">
             <ImageFrame
               src={item.src}
               alt={item.alt}
@@ -50,7 +53,7 @@ export function Gallery() {
       </div>
 
       <Lightbox
-        images={gallery.items.map((item) => ({ src: item.src, alt: item.alt }))}
+        images={items.map((item) => ({ src: item.src, alt: item.alt }))}
         index={index}
         onClose={() => setIndex(null)}
         onIndexChange={setIndex}

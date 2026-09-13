@@ -6,10 +6,13 @@ import type {
   Hold,
   Incident,
   Inquiry,
+  Profile,
   RateRule,
   Settings,
+  Turnover,
 } from "@/lib/types";
 import { DEFAULT_SETTINGS } from "@/lib/types";
+import { CONTENT_DEFAULTS, resolveContent, type EditableContent } from "@/lib/content-db";
 
 /* ============================================================================
  *  One place that reads the owner's data.
@@ -67,6 +70,49 @@ export async function loadAdminData(): Promise<AdminData> {
     rateRules: (ratesRes.data as RateRule[] | null) ?? [],
     error: failed ? READ_FAILED : "",
   };
+}
+
+/* Everyone who can sign in. The email lives in auth.users, which is not
+   reachable with the anon key, so the list shows whatever name has been set
+   and falls back to a short id - enough to tell two people apart without
+   needing the service-role key just to render a settings panel. */
+export async function loadPeople(): Promise<Profile[]> {
+  if (!SUPABASE_CONFIGURED) return [];
+
+  const { data } = await createClient()
+    .from("profiles")
+    .select("*")
+    .order("role", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  return (data as Profile[] | null) ?? [];
+}
+
+/** Turnovers the staff have flagged, for the owner's dashboard. */
+export async function loadFlaggedTurnovers(): Promise<Turnover[]> {
+  if (!SUPABASE_CONFIGURED) return [];
+
+  const { data } = await createClient()
+    .from("turnovers")
+    .select("*")
+    .eq("damage_found", true)
+    .order("due_on", { ascending: false });
+
+  return (data as Turnover[] | null) ?? [];
+}
+
+/** Owner-edited content, folded over the defaults in src/lib/content.ts. */
+export async function loadEditableContent(): Promise<EditableContent> {
+  if (!SUPABASE_CONFIGURED) return CONTENT_DEFAULTS;
+
+  try {
+    const { data } = await createClient().from("content_blocks").select("key, value");
+    return resolveContent((data as { key: string; value: unknown }[] | null) ?? []);
+  } catch {
+    // A missing table means migration 002 has not run. The site ships with
+    // its own content, so this is a non-event.
+    return CONTENT_DEFAULTS;
+  }
 }
 
 /** One stay plus everything hanging off it, for the booking detail page. */

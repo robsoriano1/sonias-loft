@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { SUPABASE_CONFIGURED } from "@/lib/supabase/config";
 import { publicBlockedDays } from "@/lib/availability";
+import { loadEditableContent } from "@/lib/admin-data";
 import type { Hold } from "@/lib/types";
 import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
@@ -43,7 +44,9 @@ async function getBlockedDates(): Promise<string[]> {
 }
 
 export default async function HomePage() {
-  const blocked = await getBlockedDates();
+  // Both degrade to the defaults in src/lib/content.ts if the database is
+  // unreachable, so the landing page never depends on it to render.
+  const [blocked, content] = await Promise.all([getBlockedDates(), loadEditableContent()]);
 
   return (
     <>
@@ -51,12 +54,12 @@ export default async function HomePage() {
       <main>
         <Hero />
         <TheLoft />
-        <Gallery />
+        <Gallery items={content.gallery} />
         <Pool />
-        <Amenities />
+        <Amenities items={content.amenities} />
         <Location />
-        <HouseRules />
-        <Reviews />
+        <HouseRules items={content.houseRules} />
+        <Reviews items={content.reviews} />
         <Availability blocked={blocked} />
         <InquiryForm />
       </main>
