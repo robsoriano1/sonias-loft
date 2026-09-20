@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateSender } from "./sender";
+import { parseSender, validateSender } from "./sender";
 
 /* The rule is small; what is worth pinning is that a stray bracket - the real
    mistake that cost an afternoon - is caught and named rather than handed to
@@ -56,5 +56,50 @@ describe("validateSender - rejects", () => {
 
   it("quotes the offending value back so it can be compared to the variable", () => {
     expect(validateSender("nonsense")).toContain("nonsense");
+  });
+});
+
+/* SendGrid wants the name and address as separate fields, so a sender that
+   parses wrongly would send from the wrong address rather than fail loudly. */
+describe("parseSender", () => {
+  it("splits a named address into its two parts", () => {
+    expect(parseSender("Sonia's Loft <bookings@soniasloft.com>")).toEqual({
+      name: "Sonia's Loft",
+      email: "bookings@soniasloft.com",
+    });
+  });
+
+  it("reports no name for a bare address", () => {
+    expect(parseSender("bookings@soniasloft.com")).toEqual({
+      name: null,
+      email: "bookings@soniasloft.com",
+    });
+  });
+
+  it("strips quotes some clients wrap the name in", () => {
+    expect(parseSender('"Sonia\'s Loft" <bookings@soniasloft.com>')).toEqual({
+      name: "Sonia's Loft",
+      email: "bookings@soniasloft.com",
+    });
+  });
+
+  it("trims the padding around both parts", () => {
+    expect(parseSender("  Sonia's Loft   <  bookings@soniasloft.com  >  ")).toEqual({
+      name: "Sonia's Loft",
+      email: "bookings@soniasloft.com",
+    });
+  });
+
+  it("handles a gmail sender, which is the whole point of single-sender verification", () => {
+    expect(parseSender("Sonia's Loft <robsoriano177@gmail.com>")).toEqual({
+      name: "Sonia's Loft",
+      email: "robsoriano177@gmail.com",
+    });
+  });
+
+  it("refuses anything validateSender would reject rather than guessing", () => {
+    expect(parseSender("Sonia's Loft <<bookings@soniasloft.com>")).toBeNull();
+    expect(parseSender("nonsense")).toBeNull();
+    expect(parseSender("")).toBeNull();
   });
 });

@@ -3,10 +3,10 @@ import { Resend } from "resend";
 import type { Hold, Inquiry, Settings } from "./types";
 import { location, site } from "./content";
 import { formatDateKey, countNights } from "./dates";
-import { validateSender } from "./sender";
+import { parseSender, validateSender } from "./sender";
 
 /* ============================================================================
- *  Outbound email. Resend, wrapped thin.
+ *  Outbound email. SendGrid or Resend, wrapped thin.
  *
  *  Two rules this module exists to keep:
  *
@@ -14,29 +14,60 @@ import { validateSender } from "./sender";
  *     successfully even if the mail provider is down, misconfigured, or not
  *     set up yet - losing the enquiry to save the email would be exactly
  *     backwards. Every function here returns a result instead.
- *  2. No key, no send. With RESEND_API_KEY unset the whole thing is inert and
- *     says so, which is what CI and a fresh clone will see.
+ *  2. No key, no send. With neither provider's key set the whole thing is
+ *     inert and says so, which is what CI and a fresh clone will see.
  *
- *  Set in Vercel: RESEND_API_KEY, NOTIFY_FROM (a verified sender, e.g.
- *  "Sonia's Loft <bookings@sonias-loft.com>"). The owner's destination inbox
- *  is settings.notify_email, editable in Owner -> Settings.
+ *  Set in Vercel: SENDGRID_API_KEY or RESEND_API_KEY, plus NOTIFY_FROM (a
+ *  sender the chosen provider has verified). The owner's destination inbox is
+ *  settings.notify_email, editable in Owner -> Settings.
  * ========================================================================== */
 
-const API_KEY = process.env.RESEND_API_KEY;
-const FROM = process.env.NOTIFY_FROM ?? "Sonia's Loft <onboarding@resend.dev>";
+/* Two providers, because they solve different problems.
 
-export const MAIL_CONFIGURED = Boolean(API_KEY);
+   SendGrid verifies a single ordinary address - a Gmail will do - so mail can
+   go out today without owning a domain. Resend requires a verified domain,
+   which is the better end state: it gets you DKIM and SPF, and therefore
+   confirmations that land in inboxes rather than spam.
+
+   Whichever key is present wins, SendGrid first, so switching is a matter of
+   setting a variable rather than changing code. MAIL_PROVIDER forces one. */
+const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
+const RESEND_KEY = process.env.RESEND_API_KEY;
+
+export type MailProvider = "sendgrid" | "resend" | "none";
+
+function pickProvider(): MailProvider {
+  const forced = process.env.MAIL_PROVIDER?.toLowerCase();
+  if (forced === "sendgrid") return SENDGRID_KEY ? "sendgrid" : "none";
+  if (forced === "resend") return RESEND_KEY ? "resend" : "none";
+  if (SENDGRID_KEY) return "sendgrid";
+  if (RESEND_KEY) return "resend";
+  return "none";
+}
+
+export const MAIL_PROVIDER = pickProvider();
+export const MAIL_CONFIGURED = MAIL_PROVIDER !== "none";
+
+/* The default sender only makes sense on Resend - it is Resend's own shared
+   test address. SendGrid has no equivalent: every send must come from an
+   address that account has verified, so there is nothing to fall back to. */
+const FROM =
+  process.env.NOTIFY_FROM ??
+  (MAIL_PROVIDER === "resend" ? "Sonia's Loft <onboarding@resend.dev>" : "");
 
 /** The sender in use, for error messages. Not a secret. */
 export const FROM_ADDRESS = FROM;
 
 /** True while falling back to Resend's shared test sender, which can only
     deliver to the address that owns the Resend account. */
-export const USING_TEST_SENDER = !process.env.NOTIFY_FROM;
+export const USING_TEST_SENDER = !process.env.NOTIFY_FROM && MAIL_PROVIDER === "resend";
 
 /** Null when the sender is well-formed, otherwise a sentence saying what is
     wrong with it. Checked before any send so a typo fails loudly and once. */
 export function senderProblem(): string | null {
+  if (MAIL_PROVIDER === "sendgrid" && !process.env.NOTIFY_FROM) {
+    return "NOTIFY_FROM is not set. SendGrid has no shared sender - set it to the address you verified under Single Sender Verification, e.g. Sonia's Loft <you@gmail.com>.";
+  }
   return validateSender(FROM);
 }
 
@@ -48,8 +79,11 @@ export async function sendEmail(message: {
   html: string;
   replyTo?: string;
 }): Promise<SendResult> {
-  if (!API_KEY) {
-    return { ok: false, error: "RESEND_API_KEY is not set - email is switched off." };
+  if (MAIL_PROVIDER === "none") {
+    return {
+      ok: false,
+      error: "No mail provider configured - set SENDGRID_API_KEY or RESEND_API_KEY.",
+    };
   }
   if (!message.to) {
     return { ok: false, error: "No destination address." };
@@ -60,19 +94,84 @@ export async function sendEmail(message: {
   if (badSender) return { ok: false, error: badSender };
 
   try {
-    const { error } = await new Resend(API_KEY).emails.send({
-      from: FROM,
-      to: message.to,
-      subject: message.subject,
-      html: message.html,
-      replyTo: message.replyTo,
-    });
-
-    if (error) return { ok: false, error: error.message ?? "Resend rejected the message." };
-    return { ok: true };
+    return MAIL_PROVIDER === "sendgrid"
+      ? await sendViaSendGrid(message)
+      : await sendViaResend(message);
   } catch (cause) {
     return { ok: false, error: cause instanceof Error ? cause.message : "Unknown send failure." };
   }
+}
+
+async function sendViaResend(message: {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<SendResult> {
+  const { error } = await new Resend(RESEND_KEY).emails.send({
+    from: FROM,
+    to: message.to,
+    subject: message.subject,
+    html: message.html,
+    replyTo: message.replyTo,
+  });
+
+  if (error) return { ok: false, error: error.message ?? "Resend rejected the message." };
+  return { ok: true };
+}
+
+/* Plain fetch rather than @sendgrid/mail - it is one POST, and the SDK would
+   be a second mail dependency earning its keep only at install time. */
+async function sendViaSendGrid(message: {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<SendResult> {
+  const sender = parseSender(FROM);
+  if (!sender) return { ok: false, error: `Could not read NOTIFY_FROM: ${FROM}` };
+
+  const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${SENDGRID_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: message.to }] }],
+      from: sender.name ? { email: sender.email, name: sender.name } : { email: sender.email },
+      subject: message.subject,
+      content: [{ type: "text/html", value: message.html }],
+      ...(message.replyTo ? { reply_to: { email: message.replyTo } } : {}),
+    }),
+  });
+
+  // A successful send is 202 with an empty body.
+  if (response.ok) return { ok: true };
+
+  return { ok: false, error: await describeSendGridError(response) };
+}
+
+/* SendGrid returns {errors: [{message, field, help}]}. Its most common
+   rejection - an unverified sender - says so only in `message`, so the raw
+   text is passed through rather than flattened. */
+async function describeSendGridError(response: Response): Promise<string> {
+  let detail = "";
+  try {
+    const body = (await response.json()) as { errors?: { message?: string }[] };
+    detail = (body.errors ?? [])
+      .map((e) => e.message)
+      .filter(Boolean)
+      .join("; ");
+  } catch {
+    detail = "";
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    return `SendGrid rejected the API key (${response.status}). ${detail || "Check SENDGRID_API_KEY has Mail Send permission."}`;
+  }
+
+  return `SendGrid returned ${response.status}. ${detail || "No detail given."}`;
 }
 
 /* ---------------------------------------------------------------------------
