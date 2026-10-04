@@ -4,8 +4,9 @@ import {
   FROM_ADDRESS,
   MAIL_CONFIGURED,
   MAIL_PROVIDER,
+  PROVIDER_NAMES,
   USING_TEST_SENDER,
-  senderProblem,
+  configProblem,
 } from "@/lib/notify";
 import { requireOwner } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
@@ -41,24 +42,25 @@ export default async function SettingsPage() {
 
       {!MAIL_CONFIGURED && (
         <p className="mt-8 rounded-sm border border-teak-600 bg-sand px-5 py-4 text-[0.875rem] leading-[1.65] text-teak-600">
-          Email is switched off because neither <code>SENDGRID_API_KEY</code> nor{" "}
-          <code>RESEND_API_KEY</code> is set in Vercel. New enquiries will still be saved, but
-          nobody will be told about them and guests will not get their confirmation.
+          Email is switched off because no mail provider is set up in Vercel. Add{" "}
+          <code>GMAIL_USER</code> and <code>GMAIL_APP_PASSWORD</code>, then redeploy. New
+          enquiries will still be saved, but nobody will be told about them and guests will not
+          get their confirmation.
         </p>
       )}
 
       {MAIL_CONFIGURED && (
         <p className="mt-8 text-[0.78125rem] text-ink-300">
-          Sending through {MAIL_PROVIDER === "sendgrid" ? "SendGrid" : "Resend"} as{" "}
+          Sending through {PROVIDER_NAMES[MAIL_PROVIDER]} as{" "}
           <code>{FROM_ADDRESS}</code>
         </p>
       )}
 
-      {/* A malformed sender fails every single send, so it goes above
-          everything else and quotes the value back. */}
-      {MAIL_CONFIGURED && senderProblem() && (
+      {/* A missing or malformed variable fails every single send, so it goes
+          above everything else and names the variable. */}
+      {MAIL_CONFIGURED && configProblem() && (
         <p className="mt-8 rounded-sm border border-teak-600 bg-sand px-5 py-4 text-[0.875rem] leading-[1.65] text-teak-600">
-          {senderProblem()}
+          {configProblem()}
         </p>
       )}
 

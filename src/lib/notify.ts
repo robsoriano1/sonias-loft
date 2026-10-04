@@ -1,12 +1,13 @@
 import "server-only";
+import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import type { Hold, Inquiry, Settings } from "./types";
 import { location, site } from "./content";
 import { formatDateKey, countNights } from "./dates";
-import { parseSender, validateSender } from "./sender";
+import { isBareEmail, parseSender, validateSender } from "./sender";
 
 /* ============================================================================
- *  Outbound email. SendGrid or Resend, wrapped thin.
+ *  Outbound email. Gmail, SendGrid or Resend, wrapped thin.
  *
  *  Two rules this module exists to keep:
  *
@@ -14,32 +15,50 @@ import { parseSender, validateSender } from "./sender";
  *     successfully even if the mail provider is down, misconfigured, or not
  *     set up yet - losing the enquiry to save the email would be exactly
  *     backwards. Every function here returns a result instead.
- *  2. No key, no send. With neither provider's key set the whole thing is
+ *  2. No key, no send. With no provider's credentials set the whole thing is
  *     inert and says so, which is what CI and a fresh clone will see.
  *
- *  Set in Vercel: SENDGRID_API_KEY or RESEND_API_KEY, plus NOTIFY_FROM (a
- *  sender the chosen provider has verified). The owner's destination inbox is
- *  settings.notify_email, editable in Owner -> Settings.
+ *  Set in Vercel: GMAIL_USER + GMAIL_APP_PASSWORD, or SENDGRID_API_KEY or
+ *  RESEND_API_KEY plus NOTIFY_FROM (a sender that provider has verified). The
+ *  owner's destination inbox is settings.notify_email, editable in
+ *  Owner -> Settings.
  * ========================================================================== */
 
-/* Two providers, because they solve different problems.
+/* Three providers, because they solve different problems.
 
-   SendGrid verifies a single ordinary address - a Gmail will do - so mail can
-   go out today without owning a domain. Resend requires a verified domain,
-   which is the better end state: it gets you DKIM and SPF, and therefore
-   confirmations that land in inboxes rather than spam.
+   Gmail logs into an ordinary Gmail account with an app password and sends as
+   that account. It is free, needs no domain, and because Google signs the mail
+   itself it reaches inboxes better than a third party sending "as" a Gmail
+   address. This is the route in use.
 
-   Whichever key is present wins, SendGrid first, so switching is a matter of
-   setting a variable rather than changing code. MAIL_PROVIDER forces one. */
+   SendGrid verifies a single ordinary address, but its free plan was retired
+   in 2025 - a new account gets a 60-day trial and then sending stops unless
+   someone pays. Resend has a real free tier but requires a verified domain;
+   once a domain is bought it is the better end state, with DKIM and SPF on
+   the site's own name.
+
+   Gmail wins when its variables are present, then SendGrid, then Resend. Gmail
+   goes first so a key left behind by an earlier attempt at another provider
+   cannot quietly take over. MAIL_PROVIDER forces one. */
+const GMAIL_USER = process.env.GMAIL_USER?.trim();
+/* Google displays an app password as four groups of four with spaces between,
+   and that is how it gets copied. Gmail wants the sixteen letters alone. */
+const GMAIL_PASSWORD = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
 const RESEND_KEY = process.env.RESEND_API_KEY;
 
-export type MailProvider = "sendgrid" | "resend" | "none";
+export type MailProvider = "gmail" | "sendgrid" | "resend" | "none";
+
+/* Either Gmail variable alone selects Gmail. With only one set, the missing
+   one is named by configProblem() rather than mail just being "off". */
+const HAS_GMAIL = Boolean(GMAIL_USER || GMAIL_PASSWORD);
 
 function pickProvider(): MailProvider {
   const forced = process.env.MAIL_PROVIDER?.toLowerCase();
+  if (forced === "gmail") return HAS_GMAIL ? "gmail" : "none";
   if (forced === "sendgrid") return SENDGRID_KEY ? "sendgrid" : "none";
   if (forced === "resend") return RESEND_KEY ? "resend" : "none";
+  if (HAS_GMAIL) return "gmail";
   if (SENDGRID_KEY) return "sendgrid";
   if (RESEND_KEY) return "resend";
   return "none";
@@ -48,12 +67,29 @@ function pickProvider(): MailProvider {
 export const MAIL_PROVIDER = pickProvider();
 export const MAIL_CONFIGURED = MAIL_PROVIDER !== "none";
 
-/* The default sender only makes sense on Resend - it is Resend's own shared
-   test address. SendGrid has no equivalent: every send must come from an
-   address that account has verified, so there is nothing to fall back to. */
+export const PROVIDER_NAMES: Record<MailProvider, string> = {
+  gmail: "Gmail",
+  sendgrid: "SendGrid",
+  resend: "Resend",
+  none: "nothing",
+};
+
+/** Why nothing is being sent, worded for whoever has to fix it. */
+export const MAIL_OFF_REASON =
+  "No mail provider is set up. Add GMAIL_USER and GMAIL_APP_PASSWORD in Vercel, then redeploy - saving a variable alone does not change the running site.";
+
+/* Gmail always sends as the account it logged into - it rewrites any other
+   From address to that one - so NOTIFY_FROM is ignored there rather than
+   allowed to disagree with what guests actually see.
+
+   The Resend fallback is Resend's own shared test address. SendGrid has no
+   equivalent: every send must come from an address that account has
+   verified, so there is nothing to fall back to. */
 const FROM =
-  process.env.NOTIFY_FROM ??
-  (MAIL_PROVIDER === "resend" ? "Sonia's Loft <onboarding@resend.dev>" : "");
+  MAIL_PROVIDER === "gmail"
+    ? `${site.name} <${GMAIL_USER ?? ""}>`
+    : process.env.NOTIFY_FROM ??
+      (MAIL_PROVIDER === "resend" ? "Sonia's Loft <onboarding@resend.dev>" : "");
 
 /** The sender in use, for error messages. Not a secret. */
 export const FROM_ADDRESS = FROM;
@@ -62,9 +98,21 @@ export const FROM_ADDRESS = FROM;
     deliver to the address that owns the Resend account. */
 export const USING_TEST_SENDER = !process.env.NOTIFY_FROM && MAIL_PROVIDER === "resend";
 
-/** Null when the sender is well-formed, otherwise a sentence saying what is
-    wrong with it. Checked before any send so a typo fails loudly and once. */
-export function senderProblem(): string | null {
+/** Null when the provider's variables are usable, otherwise a sentence saying
+    which one is wrong. Checked before any send so a typo fails loudly and once. */
+export function configProblem(): string | null {
+  if (MAIL_PROVIDER === "gmail") {
+    if (!GMAIL_USER) {
+      return "GMAIL_USER is not set. It should be the Gmail address the app password belongs to, e.g. you@gmail.com.";
+    }
+    if (!isBareEmail(GMAIL_USER)) {
+      return `GMAIL_USER should be just the address, like you@gmail.com, with no name or brackets. It is currently ${GMAIL_USER}`;
+    }
+    if (!GMAIL_PASSWORD) {
+      return "GMAIL_APP_PASSWORD is not set. Create one at myaccount.google.com/apppasswords (2-Step Verification must be on) and paste the 16 letters.";
+    }
+    return null;
+  }
   if (MAIL_PROVIDER === "sendgrid" && !process.env.NOTIFY_FROM) {
     return "NOTIFY_FROM is not set. SendGrid has no shared sender - set it to the address you verified under Single Sender Verification, e.g. Sonia's Loft <you@gmail.com>.";
   }
@@ -80,26 +128,83 @@ export async function sendEmail(message: {
   replyTo?: string;
 }): Promise<SendResult> {
   if (MAIL_PROVIDER === "none") {
-    return {
-      ok: false,
-      error: "No mail provider configured - set SENDGRID_API_KEY or RESEND_API_KEY.",
-    };
+    return { ok: false, error: MAIL_OFF_REASON };
   }
   if (!message.to) {
     return { ok: false, error: "No destination address." };
   }
 
   // Caught here rather than at the API, so the message names the variable.
-  const badSender = senderProblem();
-  if (badSender) return { ok: false, error: badSender };
+  const badConfig = configProblem();
+  if (badConfig) return { ok: false, error: badConfig };
 
   try {
-    return MAIL_PROVIDER === "sendgrid"
-      ? await sendViaSendGrid(message)
-      : await sendViaResend(message);
+    if (MAIL_PROVIDER === "gmail") return await sendViaGmail(message);
+    if (MAIL_PROVIDER === "sendgrid") return await sendViaSendGrid(message);
+    return await sendViaResend(message);
   } catch (cause) {
     return { ok: false, error: cause instanceof Error ? cause.message : "Unknown send failure." };
   }
+}
+
+/* Gmail's own SMTP server, logged in with an app password.
+
+   The timeouts are short on purpose: the enquiry form waits on this send, and
+   nodemailer's default is two minutes to connect. If Gmail is unreachable a
+   guest should wait seconds, then see their enquiry go through anyway. */
+async function sendViaGmail(message: {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<SendResult> {
+  const transport = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user: GMAIL_USER, pass: GMAIL_PASSWORD },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
+  });
+
+  try {
+    await transport.sendMail({
+      from: { name: site.name, address: GMAIL_USER ?? "" },
+      to: message.to,
+      subject: message.subject,
+      html: message.html,
+      ...(message.replyTo ? { replyTo: message.replyTo } : {}),
+    });
+    return { ok: true };
+  } catch (cause) {
+    return { ok: false, error: describeGmailError(cause) };
+  }
+}
+
+type SmtpError = { code?: string; responseCode?: number; response?: string; message?: string };
+
+/* Google's own wording is always passed through - it is specific and it is
+   what a search will find - but the two login failures get a plain-language
+   lead, because their real causes are not what the SMTP text suggests. */
+function describeGmailError(cause: unknown): string {
+  const error = (cause ?? {}) as SmtpError;
+  const said = (error.response ?? error.message ?? "No detail given.").trim();
+
+  // 534 5.7.9: the account's normal password was used, not an app password.
+  if (error.responseCode === 534) {
+    return `Gmail wants an app password, not the account's normal password. Create one at myaccount.google.com/apppasswords and put it in GMAIL_APP_PASSWORD. Google said: ${said}`;
+  }
+
+  if (error.code === "EAUTH" || error.responseCode === 535) {
+    return `Gmail refused the login. Check GMAIL_USER is the full address and GMAIL_APP_PASSWORD is a current app password for it - changing the account's main password cancels every app password. Google said: ${said}`;
+  }
+
+  if (error.code === "ETIMEDOUT" || error.code === "ECONNECTION" || error.code === "EDNS") {
+    return `Could not reach Gmail's mail server. Try again in a minute. Detail: ${said}`;
+  }
+
+  return `Gmail did not send it. Google said: ${said}`;
 }
 
 async function sendViaResend(message: {

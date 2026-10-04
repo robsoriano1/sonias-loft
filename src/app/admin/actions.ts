@@ -11,6 +11,7 @@ import {
   guestConfirmationEmail,
   guestReviewRequestEmail,
   MAIL_CONFIGURED,
+  MAIL_OFF_REASON,
   sendEmail,
 } from "@/lib/notify";
 import { site } from "@/lib/content";
@@ -467,7 +468,7 @@ async function sendGuestMessage(
 
   const result = MAIL_CONFIGURED
     ? await sendEmail({ to, subject, html })
-    : ({ ok: false, error: "RESEND_API_KEY is not set - email is switched off." } as const);
+    : ({ ok: false, error: MAIL_OFF_REASON } as const);
 
   await supabase.from("guest_messages").upsert(
     {
@@ -549,11 +550,7 @@ export async function sendTestEmail(): Promise<ActionResult> {
   const supabase = await requireUser();
 
   if (!MAIL_CONFIGURED) {
-    return {
-      ok: false,
-      error:
-        "RESEND_API_KEY is not set in this environment. On Vercel, add it and redeploy - saving the variable alone does not affect the running site.",
-    };
+    return { ok: false, error: MAIL_OFF_REASON };
   }
 
   const { data } = await supabase.from("settings").select("notify_email").eq("id", 1).maybeSingle();

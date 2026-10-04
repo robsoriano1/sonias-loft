@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient, SERVICE_ROLE_CONFIGURED } from "@/lib/supabase/admin";
-import { guestReviewRequestEmail, MAIL_CONFIGURED, sendEmail } from "@/lib/notify";
+import { guestReviewRequestEmail, MAIL_CONFIGURED, MAIL_OFF_REASON, sendEmail } from "@/lib/notify";
 import { DEFAULT_SETTINGS, type Hold, type Settings } from "@/lib/types";
 import { addDays, todayKey } from "@/lib/dates";
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
   }
 
   if (!MAIL_CONFIGURED) {
-    return NextResponse.json({ skipped: "RESEND_API_KEY is not set." }, { status: 503 });
+    return NextResponse.json({ skipped: MAIL_OFF_REASON }, { status: 503 });
   }
 
   const supabase = createAdminClient();

@@ -11,6 +11,11 @@ const BARE_EMAIL = /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/;
    address as invalid - which sends someone hunting for a problem elsewhere. */
 const NAMED_EMAIL = /^[^<>]+<\s*[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+\s*>$/;
 
+/** True for a plain address with no display name - what an SMTP login wants. */
+export function isBareEmail(value: string): boolean {
+  return BARE_EMAIL.test(value.trim());
+}
+
 /** Null when the sender is well-formed, otherwise a sentence saying what is
     wrong with it, quoting the value so it can be compared to the variable. */
 export function validateSender(value: string): string | null {
